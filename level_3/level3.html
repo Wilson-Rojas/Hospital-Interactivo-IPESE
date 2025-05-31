@@ -3,10 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Nivel 3 - Hospital Dash</title>
-  <link rel="stylesheet" href="../menu.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('../src/background/arcade_background.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: top center;
+      background-color: #212750;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      margin: 0;
+      overflow: hidden;
+      min-height: 100vh;
+      width: 100vw;
+    }
+  </style>
 </head>
 <body>
+  <div class="transition-overlay"></div>
+  <div class="cortina" id="cortina"></div>
+
   <canvas id="game-canvas" width="640" height="480"></canvas>
-  <script src="nivel1.js"></script>
+  <script src="level.js"></script>
 </body>
 </html>

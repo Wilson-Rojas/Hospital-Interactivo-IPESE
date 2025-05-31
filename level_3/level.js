@@ -1,3 +1,16 @@
+
+window.addEventListener("load", () => {
+  const cortina = document.getElementById("cortina");
+  cortina.style.background = "black";
+  cortina.style.transform = "translateY(0)"; // Empieza cubriendo todo (negro)
+  setTimeout(() => {
+    cortina.style.transform = "translateY(-100%)"; // Sube la cortina después de 800ms
+    setTimeout(() => {
+      cortina.style.display = "none";
+    }, 800); // Espera a que termine la animación de subida
+  }, 800);
+});
+
 function IniciarNivel(level) {
   // Simulación de sonido retro y efecto de animación
   console.log("Iniciando Nivel", level);

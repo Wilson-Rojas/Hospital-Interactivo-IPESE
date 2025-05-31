@@ -7,7 +7,7 @@ function IniciarNivel(level) {
   const button = event.target;
   button.style.animation = 'none';
   button.offsetHeight; // trigger reflow
-  button.style.animation = 'blink 0.5s ease-in-out 3';
+  button.style.animation = 'blink 0.5s ease-in-out 3'; 
 
   // Esperar a que termine la animación antes de iniciar el juego
   button.addEventListener('animationend', function handler() {
