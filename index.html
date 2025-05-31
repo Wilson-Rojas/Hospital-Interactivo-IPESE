@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>IPESE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background-image: url('src/background/fondo_p1.png');
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
+    background-position: center 0;
+    min-height: 100vh;
+    min-width: 100vw;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    transition: background-position 1s;
+    animation: move-bg 1.5s ease-in-out infinite alternate;
+  }
+  @keyframes move-bg {
+    0% {
+      background-position: center 0;
+    }
+    100% {
+      background-position: center -4px;
+    }
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 30vh;
+    pointer-events: none;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.9), transparent);
+    z-index: 1;
+  }
+</style>
+</head>
+<body>
+  <div class="transition-overlay"></div>
+  <div id="menu">
+    <h1 class="title">IPESE</h1>
+    <h2 class="subtitle"> Selecciona la Sala donde Ayudaras</h2>
+    <div id="level-select">
+      <button class="hard" onclick="IniciarNivel(1)" id="hard">Urgencias Medicas</button>
+      <button class="normal" onclick="IniciarNivel(2)" id="normal">Sala de Clinicas</button>
+      <button class="easy"  onclick="IniciarNivel(3)" id="easy">Emergencias</button>
+    </div>
+  </div>
+
+  <canvas id="game-canvas" width="480" height="320" style="display: none;"></canvas>
+
+  <script src="js/index.js"></script>
+</body>
+</html>

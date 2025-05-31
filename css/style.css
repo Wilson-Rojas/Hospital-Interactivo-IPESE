@@ -1,0 +1,224 @@
+/* ===== ESTILOS GENERALES DEL CUERPO ===== */
+body {
+    font-family: 'Press Start 2P', monospace; /* Fuente pixel art retro */
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Altura mínima de toda la ventana */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrado vertical */
+    align-items: center; /* Centrado horizontal */
+}
+/* ===== Transicion de pantalla ===== */
+
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 9999;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.8s ease-in-out;
+}
+
+.transition-overlay.active {
+  transform: scaleY(1);
+}
+
+/* ===== CONTENEDOR DEL MENÚ ===== */
+#menu {
+  padding-top: 50px; /* Espaciado superior */
+}
+
+/* ===== TÍTULO PRINCIPAL ===== */
+.title {
+  font-size: 56px;
+  color: #ffffff;
+  margin-bottom: 20px;
+  /* Sombras múltiples para efecto 3D retro */
+  text-shadow:
+    0 2px 0 #00ffe7,    /* Sombra cyan */
+    0 4px 0 #02887d,    /* Sombra cyan oscuro */
+    2px 2px 8px #000;   /* Sombra negra difusa */
+  animation: floatArcade 3s ease-in-out infinite; /* Animación flotante */
+}
+
+/* ===== SUBTÍTULO ===== */
+.subtitle {
+  font-size: 24px;
+  color: #ffffff;
+  margin-bottom: 40px;
+  /* Sombras múltiples para efecto 3D amarillo */
+  text-shadow:
+    0 1px 0 #cac707,    /* Sombra amarilla clara */
+    0 2px 0 #8a7502,    /* Sombra amarilla oscura */
+    1px 1px 6px #000;   /* Sombra negra difusa */
+  animation: floatArcade 3s ease-in-out infinite; /* Animación flotante */
+}
+
+/* ===== ANIMACIÓN FLOTANTE ARCADE ===== */
+@keyframes floatArcade {
+  0%, 100% {
+    transform: translateY(0); /* Posición inicial y final */
+  }
+  50% {
+    transform: translateY(-12px); /* Movimiento hacia arriba */
+  }
+}
+
+/* ===== ESTILOS GENERALES DE BOTONES DE NIVEL ===== */
+#level-select button {
+  margin: 10px; /* Espaciado entre botones */
+  padding: 30px 40px; /* Relleno interno generoso */
+  border: none;
+  border-radius: 10px; /* Bordes redondeados */
+  cursor: pointer; /* Cursor de mano al pasar por encima */
+  animation: floatArcade 3s ease-in-out infinite; /* Animación flotante */
+}
+
+/* ===== BOTÓN NIVEL FÁCIL ===== */
+.easy {
+  /* Gradiente verde suave para nivel fácil */
+  background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+  color: #ffffff; /* Texto blanco */
+  border: 3px solid #ffffff; /* Borde blanco */
+  font-weight: bold;
+  font-size: 20px;
+  letter-spacing: 2px; /* Espaciado entre letras estilo arcade */
+  /* Sombras para efecto 3D */
+  box-shadow: 0 4px #2e7d32, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #ffffff; /* Brillo en el texto */
+  position: relative;
+  overflow: hidden; /* Para efectos internos */
+  transition: transform 0.1s, box-shadow 0.1s; /* Transiciones suaves */
+}
+
+/* Etiqueta "FÁCIL" en la esquina del botón */
+.easy::after {
+  content: "FÁCIL";
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 12px;
+  color: #fff;
+  background: #388e3c; /* Verde oscuro */
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 2px #2e7d32; /* Sombra de la etiqueta */
+  pointer-events: none; /* No interfiere con clics */
+}
+
+/* Efecto hover para botón fácil */
+.easy:hover {
+  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+  box-shadow: 0 8px #2e7d32, 0 12px 24px #000a; /* Sombras más pronunciadas */
+  background: linear-gradient(90deg, #8bc34a 0%, #4caf50 100%); /* Gradiente invertido */
+}
+
+/* ===== BOTÓN NIVEL NORMAL ===== */
+.normal {
+  /* Gradiente azul-verde para nivel normal */
+  background: linear-gradient(90deg, #2979ff 0%, #00e676 100%);
+  color: #fffde7; /* Texto amarillo claro */
+  border: 3px solid #fffde7; /* Borde amarillo claro */
+  font-weight: bold;
+  font-size: 20px;
+  letter-spacing: 2px; /* Espaciado entre letras estilo arcade */
+  /* Sombras para efecto 3D */
+  box-shadow: 0 4px #1565c0, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #fffde7; /* Brillo en el texto */
+  position: relative;
+  overflow: hidden; /* Para efectos internos */
+  transition: transform 0.1s, box-shadow 0.1s; /* Transiciones suaves */
+}
+
+/* Etiqueta "NORMAL" en la esquina del botón */
+.normal::after {
+  content: "NORMAL";
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 12px;
+  color: #fff;
+  background: #00bfae; /* Azul verdoso */
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 2px #1565c0; /* Sombra de la etiqueta */
+  pointer-events: none; /* No interfiere con clics */
+}
+
+/* Efecto hover para botón normal */
+.normal:hover {
+  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+  box-shadow: 0 8px #1565c0, 0 12px 24px #000a; /* Sombras más pronunciadas */
+  background: linear-gradient(90deg, #00e676 0%, #2979ff 100%); /* Gradiente invertido */
+}
+
+/* ===== BOTÓN NIVEL DIFÍCIL ===== */
+.hard {
+  /* Gradiente rojo-naranja para nivel difícil */
+  background: linear-gradient(90deg, #ff1744 0%, #ff9100 100%);
+  color: #fff700; /* Texto amarillo brillante */
+  border: 3px solid #fff700; /* Borde amarillo brillante */
+  font-weight: bold;
+  font-size: 20px;
+  letter-spacing: 2px; /* Espaciado entre letras estilo arcade */
+  /* Sombras para efecto 3D */
+  box-shadow: 0 4px #b71c1c, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #fff700; /* Brillo en el texto */
+  position: relative;
+  overflow: hidden; /* Para efectos internos */
+  transition: transform 0.1s, box-shadow 0.1s; /* Transiciones suaves */
+}
+
+/* Etiqueta "DIFÍCIL" en la esquina del botón */
+.hard::after {
+  content: "DIFÍCIL";
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 12px;
+  color: #fff;
+  background: #d50000; /* Rojo intenso */
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 2px #b71c1c; /* Sombra de la etiqueta */
+  pointer-events: none; /* No interfiere con clics */
+}
+
+/* Efecto hover para botón difícil */
+.hard:hover {
+  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
+  box-shadow: 0 8px #b71c1c, 0 12px 24px #000a; /* Sombras más pronunciadas */
+  background: linear-gradient(90deg, #ff9100 0%, #ff1744 100%); /* Gradiente invertido */
+}
+
+/* ===== EFECTO HOVER GENERAL (HEREDADO) ===== */
+#level-select button:hover {
+  background-color: #004d40; /* Color de fondo alternativo (puede ser sobrescrito) */
+}
+
+/* ===== ANIMACIÓN DE PARPADEO ===== */
+@keyframes blink {
+  0%, 50% { opacity: 1; } /* Visible */
+  51%, 100% { opacity: 0; } /* Invisible */
+}
+
+/* ===== ESTILOS DE Canva ===== */
+
+#game-canvas {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  background: none;
+  display: block;
+  box-sizing: border-box;
+}
