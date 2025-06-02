@@ -24,7 +24,11 @@
 <body>
   <div class="transition-overlay"></div>
   <div class="cortina" id="cortina"></div>
-  <h1 class="subtitle">Sala de Clinicas</h1>
+  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <h1 class="subtitle" style="margin: 0 auto; flex: 1; text-align: center;">Sala de Clinicas</h1>
+    <button class="button_back" onclick="back()" style="position: absolute; left: 20px; top: 20px;">Exit</button>
+  </div>
+  <br>
   <canvas id="game-canvas" width="640" height="480"></canvas>
   <script src="level.js"></script>
 </body>

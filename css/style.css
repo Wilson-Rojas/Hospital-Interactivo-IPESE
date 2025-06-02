@@ -227,6 +227,36 @@ body {
   background: linear-gradient(90deg, #ff9100 0%, #ff1744 100%); /* Gradiente invertido */
 }
 
+/* Etiqueta de en la esquina de los niveles */
+.button_back {
+  /* Fondo retro con gradiente púrpura-azul */
+  background: linear-gradient(90deg, #7c3aed 0%, #00b4d8 100%);
+  color: #fff;
+  border: 3px solid #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  padding: 18px 36px;
+  border-radius: 10px;
+  box-shadow: 0 4px #3a0ca3, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #fff;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  margin: 10px;
+  transition: transform 0.1s, box-shadow 0.1s;
+  animation: floatArcade 3s ease-in-out infinite;
+}
+
+/* Efecto hover retro */
+.button_back:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px #3a0ca3, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #00b4d8 0%, #7c3aed 100%);
+}
+
+
 /* ===== EFECTO HOVER GENERAL (HEREDADO) ===== */
 #level-select button:hover {
   background-color: #004d40; /* Color de fondo alternativo (puede ser sobrescrito) */
@@ -245,7 +275,6 @@ body {
   height: auto;
   max-width: 100%;
   max-height: 100%;
-  background: none;
+  background-color: transparent;
   display: block;
-  box-sizing: border-box;
 }
