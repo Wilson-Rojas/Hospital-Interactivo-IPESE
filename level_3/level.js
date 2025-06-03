@@ -13,6 +13,61 @@ window.addEventListener("load", () => {
   IniciarNivel(3);//Iniciar el juego
 });
 
+//movilidad del doctor 
+window.addEventListener("keydown", (e) => {
+  const prev = { x: doctor.x, y: doctor.y };
+  let direction = "frente";
+
+  switch (e.key) {
+    case "ArrowUp":
+      doctor.y--;
+      direction = "espalda";
+      break;
+    case "ArrowDown":
+      doctor.y++;
+      direction = "frente";
+      break;
+    case "ArrowLeft":
+      doctor.x--;
+      direction = "izquierda";
+      break;
+    case "ArrowRight":
+      doctor.x++;
+      direction = "derecha";
+      break;
+  }
+  // Limitar a límites del mapa
+  doctor.x = Math.max(0, Math.min(15.5, doctor.x));
+  doctor.y = Math.max(0, Math.min(11.5, doctor.y));
+
+  // Cambiar imagen del doctor según dirección
+  if (!drawDoctor.images) drawDoctor.images = {};
+  const directionMap = {
+    "frente": "../assets/entities/doctor/doctor_frente.png",
+    "espalda": "../assets/entities/doctor/doctor_espalda.png",
+    "izquierda": "../assets/entities/doctor/doctor_izquierda.png",
+    "derecha": "../assets/entities/doctor/doctor_derecha.png"
+  };
+  if (directionMap[direction]) {
+    if (!drawDoctor.images[direction]) {
+      const img = new Image();
+      img.src = directionMap[direction];
+      img.loaded = false;
+      img.onload = () => {
+        img.loaded = true;
+        drawScene(document.getElementById("game-canvas").getContext("2d"));
+      };
+      drawDoctor.images[direction] = img;
+    }
+    drawDoctor.image = drawDoctor.images[direction];
+  }
+
+  if (prev.x !== doctor.x || prev.y !== doctor.y) {
+    drawScene(document.getElementById("game-canvas").getContext("2d"));
+    checkDoctorNearPatient();
+  }
+});
+
 //Funcion de Volver 
 function back(){
   const button = event.target;
@@ -57,9 +112,20 @@ function IniciarNivel(level) {
   const numBeds = 3; // Número maximo de camas para el nivel
   const numMachines = 2; //numero de las mauinas para el nivel
   const cols = 17;
-  const rows = 22;
+  const rows = 12;
 
-  const bedPositions = getRandomPositions(numBeds, cols, rows);
+  // Inicializar doctor y posiciones ocupadas
+  doctor = {
+    x: 0.5,
+    y: 0.5
+  };
+  const occupiedPositions = new Set();
+  occupiedPositions.add(`${doctor.x},${doctor.y}`);
+
+  // Obtener posiciones aleatorias para camas y máquinas
+  const bedPositions = getRandomPositions(numBeds, cols, rows, occupiedPositions);
+  const machinePositions = getRandomPositions(numMachines, cols, rows, occupiedPositions);
+
   // Asegurar que al menos una cama tenga paciente
   let patientAssigned = false;
   const beds = bedPositions.map((pos, i) => {
@@ -69,10 +135,6 @@ function IniciarNivel(level) {
       patient = true;
     }
     if (patient) patientAssigned = true;
-    doctor = {
-      x: 1,
-      y: 1
-    };
     return {
       type: "bed",
       x: pos.x,
@@ -81,8 +143,6 @@ function IniciarNivel(level) {
       patientStatus: patient ? "sick" : null 
     };
   });
-
-  const machinePositions = getRandomPositions(numMachines, cols, rows);
 
   entities = [
     ...beds,
@@ -97,18 +157,23 @@ function IniciarNivel(level) {
 }
 
 //funcionalidad para obtener valores ramdons 
-function getRandomPositions(count,cols, rows) {
+function getRandomPositions(count, cols, rows, occupied) {
   const positions = new Set();
   while (positions.size < count) {
-    const x = Math.floor(Math.random() * (cols - 2)) + 1;
-    const y = Math.floor(Math.random() * (rows - 2)) + 1;
-    positions.add(`${x},${y}`);
+    const x = Math.floor(Math.random() * (cols - 4)) + 2;
+    const y = Math.floor(Math.random() * (rows - 4)) + 2;
+    const key = `${x},${y}`;
+    if (!positions.has(key) && !occupied.has(key)) {
+      positions.add(key);
+      occupied.add(key);
+    }
   }
   return Array.from(positions).map(pos => {
     const [x, y] = pos.split(',').map(Number);
     return { x, y };
   });
 }
+
 
 
 function drawScene(ctx) {
@@ -182,25 +247,40 @@ function drawTopDownGrid(ctx, cols, rows, tileSize) {
 }
 
 function drawPixelFloorTile(ctx, x, y, size) {
-  // Suelo base azul claro
-  ctx.fillStyle = "#4A90E2";
+  // Seleccionar color base aleatorio para variedad visual
+  // Paleta de azules y grises claros/medios/oscuro
+  const palettes = [
+    { base: "#4A90E2", dark: "#357ABD", light: "#5BA3F5" }, // azul medio
+    { base: "#6EC6FF", dark: "#3D7BC4", light: "#A7D8FF" }, // azul claro
+    { base: "#2C3E50", dark: "#1A242F", light: "#3E5870" }, // azul oscuro
+    { base: "#B0BEC5", dark: "#78909C", light: "#CFD8DC" }, // gris claro
+    { base: "#90A4AE", dark: "#607D8B", light: "#B0BEC5" }, // gris medio
+    { base: "#E3F2FD", dark: "#B3E5FC", light: "#FFFFFF" }  // casi blanco
+  ];
+  // Usar posición para que el patrón sea consistente (no cambie en cada frame)
+  const idx = Math.abs(Math.floor(x / size) * 31 + Math.floor(y / size) * 17) % palettes.length;
+  const palette = palettes[idx];
+
+  // Suelo base
+  ctx.fillStyle = palette.base;
   ctx.fillRect(x, y, size, size);
-  
+
   // Bordes más oscuros para efecto 3D pixelado
-  ctx.fillStyle = "#357ABD";
+  ctx.fillStyle = palette.dark;
   ctx.fillRect(x, y, size, 2); // borde superior
   ctx.fillRect(x, y, 2, size); // borde izquierdo
-  
+
   // Bordes más claros
-  ctx.fillStyle = "#5BA3F5";
+  ctx.fillStyle = palette.light;
   ctx.fillRect(x + size - 2, y, 2, size); // borde derecho
   ctx.fillRect(x, y + size - 2, size, 2); // borde inferior
-  
+
   // Líneas de grid sutiles
   ctx.fillStyle = "#3D7BC4";
   ctx.fillRect(x + size - 1, y, 1, size);
   ctx.fillRect(x, y + size - 1, size, 1);
 }
+
 
 function drawPixelBed(ctx, x, y) {
   const tileSize = 25;
@@ -252,12 +332,12 @@ function drawPixelPatient(ctx, x, y, status = "sick") {
 
 function drawDoctor(ctx, x, y) {
   const tileSize = 25;
-  const width = tileSize * 1.5;
+  const width = tileSize * 2;
   const height = tileSize * 2;
 
   if (!drawDoctor.image) {
     drawDoctor.image = new Image();
-    drawDoctor.image.src = "../assets/entities/doctor.png";
+    drawDoctor.image.src = "../assets/entities/doctor/doctor_frente.png";
     drawDoctor.image.loaded = false;
     drawDoctor.image.onload = () => {
       drawDoctor.image.loaded = true;
@@ -270,87 +350,58 @@ function drawDoctor(ctx, x, y) {
   }
 }
 
+//funciion de cercania al paciente 
+function checkDoctorNearPatient() {
+  for (const entity of entities) {
+    if (entity.type === "bed" && entity.patient && entity.patientStatus !== "treated") {
+      const dx = Math.abs(doctor.x - entity.x);
+      const dy = Math.abs(doctor.y - entity.y);
+      if (dx + dy === 1) {
+        // Está al lado
+        mostrarInteraccionPaciente(entity);
+        return;
+      }
+    }
+  }
+}
+//funcion de interaccion con el paciente 
+function mostrarInteraccionPaciente(paciente) {
+  const confirmar = confirm("¿Deseas atender al paciente?");
+  if (confirmar) {
+    paciente.patientStatus = "treated";
+    alert("Paciente atendido ✅ (aquí irá un minijuego)");
+    drawScene(document.getElementById("game-canvas").getContext("2d"));
+  }
+}
 
 
 function drawPixelMachine(ctx, x, y, machineType) {
+  let imgSrc, width, height;
   if (machineType === "xray") {
-    // Máquina de rayos X
-    // Sombra
-    ctx.fillStyle = "#1A1A1A";
-    ctx.fillRect(x + 2, y + 2, 28, 28);
-    
-    // Base de la máquina
-    ctx.fillStyle = "#B0B0B0";
-    ctx.fillRect(x, y, 28, 28);
-    
-    // Panel frontal
-    ctx.fillStyle = "#E0E0E0";
-    ctx.fillRect(x + 2, y + 2, 24, 24);
-    
-    // Pantalla
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(x + 4, y + 4, 12, 8);
-    
-    // Luces indicadoras
-    ctx.fillStyle = "#00FF00";
-    ctx.fillRect(x + 18, y + 6, 2, 2);
-    ctx.fillStyle = "#FF0000";
-    ctx.fillRect(x + 22, y + 6, 2, 2);
-    
-    // Botones
-    ctx.fillStyle = "#808080";
-    ctx.fillRect(x + 6, y + 16, 4, 4);
-    ctx.fillRect(x + 12, y + 16, 4, 4);
-    ctx.fillRect(x + 18, y + 16, 4, 4);
-    
+    imgSrc = "../assets/entities/machine_xray.png";
+    width = 28;
+    height = 28;
   } else if (machineType === "monitor") {
-    // Monitor cardíaco
-    // Sombra
-    ctx.fillStyle = "#1A1A1A";
-    ctx.fillRect(x + 2, y + 2, 24, 32);
-    
-    // Base del monitor
-    ctx.fillStyle = "#696969";
-    ctx.fillRect(x, y, 24, 32);
-    
-    // Pantalla principal
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(x + 2, y + 2, 20, 16);
-    
-    // Línea de ECG (verde)
-    ctx.fillStyle = "#00FF00";
-    ctx.fillRect(x + 4, y + 10, 2, 1);
-    ctx.fillRect(x + 6, y + 8, 2, 1);
-    ctx.fillRect(x + 8, y + 6, 2, 1);
-    ctx.fillRect(x + 10, y + 8, 2, 1);
-    ctx.fillRect(x + 12, y + 10, 2, 1);
-    ctx.fillRect(x + 14, y + 12, 2, 1);
-    ctx.fillRect(x + 16, y + 10, 2, 1);
-    ctx.fillRect(x + 18, y + 10, 2, 1);
-    
-    // Números vitales
-    ctx.fillStyle = "#FF6600";
-    ctx.fillRect(x + 4, y + 4, 1, 1);
-    ctx.fillRect(x + 6, y + 4, 1, 1);
-    ctx.fillRect(x + 8, y + 4, 1, 1);
-    
-    // Panel de controles
-    ctx.fillStyle = "#A0A0A0";
-    ctx.fillRect(x + 2, y + 20, 20, 10);
-    
-    // Botones del panel
-    ctx.fillStyle = "#FF0000";
-    ctx.fillRect(x + 4, y + 22, 3, 3);
-    ctx.fillStyle = "#00FF00";
-    ctx.fillRect(x + 9, y + 22, 3, 3);
-    ctx.fillStyle = "#0000FF";
-    ctx.fillRect(x + 14, y + 22, 3, 3);
-    
-    // Pequeños LEDs
-    ctx.fillStyle = "#FFFF00";
-    ctx.fillRect(x + 6, y + 27, 1, 1);
-    ctx.fillRect(x + 10, y + 27, 1, 1);
-    ctx.fillStyle = "#FF00FF";
-    ctx.fillRect(x + 14, y + 27, 1, 1);
+    imgSrc = "../assets/entities/machine_monitor.png";
+    width = 24;
+    height = 32;
+  } else {
+    return;
+  }
+
+  if (!drawPixelMachine.images) drawPixelMachine.images = {};
+  if (!drawPixelMachine.images[machineType]) {
+    const img = new Image();
+    img.src = imgSrc;
+    img.loaded = false;
+    img.onload = () => {
+      img.loaded = true;
+      drawScene(ctx);
+    };
+    drawPixelMachine.images[machineType] = img;
+  }
+  const img = drawPixelMachine.images[machineType];
+  if (img.loaded) {
+    ctx.drawImage(img, x, y, width, height);
   }
 }
