@@ -223,16 +223,6 @@ document.getElementById("game-canvas").addEventListener("click", (event) => {
     }
     return false;
   });
-
-  if (clickedEntity) {
-    if (clickedEntity.patientStatus === "sick") {
-      clickedEntity.patientStatus = "treated";
-      alert("Paciente atendido 🎉");
-    } else {
-      alert("Este paciente ya fue tratado.");
-    }
-    drawScene(document.getElementById("game-canvas").getContext("2d"));
-  }
 });
 
 
@@ -364,16 +354,32 @@ function checkDoctorNearPatient() {
     }
   }
 }
-//funcion de interaccion con el paciente 
-function mostrarInteraccionPaciente(paciente) {
-  const confirmar = confirm("¿Deseas atender al paciente?");
-  if (confirmar) {
-    paciente.patientStatus = "treated";
-    alert("Paciente atendido ✅ (aquí irá un minijuego)");
-    drawScene(document.getElementById("game-canvas").getContext("2d"));
-  }
-}
 
+function checkDoctorNearPatient() {
+  const tileSize = 33;
+  const canvas = document.getElementById("game-canvas");
+  const dialogo = document.getElementById("dialogo-contextual");
+
+  for (const entity of entities) {
+    if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
+      const dx = Math.abs(doctor.x - entity.x);
+      const dy = Math.abs(doctor.y - entity.y);
+      if (dx + dy === 1) {
+        // Mostrar mensaje
+        const x = entity.x * tileSize + 50;
+        const y = entity.y * tileSize + 30;
+
+        dialogo.style.left = `${x}px`;
+        dialogo.style.top = `${y}px`;
+        dialogo.innerText = "Presiona [E] para atender";
+        dialogo.style.display = "block";
+        return;
+      }
+    }
+  }
+
+  dialogo.style.display = "none";
+}
 
 function drawPixelMachine(ctx, x, y, machineType) {
   let imgSrc, width, height;
