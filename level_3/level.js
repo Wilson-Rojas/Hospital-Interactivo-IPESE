@@ -1,5 +1,7 @@
 let entities = [];
 let doctor = [];
+const modal = new bootstrap.Modal(document.getElementById('modalGlobal'));
+
 window.addEventListener("load", () => {
   const cortina = document.getElementById("cortina");
   cortina.style.background = "black";
@@ -20,25 +22,29 @@ window.addEventListener("keydown", (e) => {
 
   switch (e.key) {
     case "ArrowUp":
-      doctor.y--;
+      doctor.y -= 0.5;
       direction = "espalda";
       break;
     case "ArrowDown":
-      doctor.y++;
+      doctor.y += 0.5;
       direction = "frente";
       break;
     case "ArrowLeft":
-      doctor.x--;
+      doctor.x -= 0.5;
       direction = "izquierda";
       break;
     case "ArrowRight":
-      doctor.x++;
+      doctor.x += 0.5;
       direction = "derecha";
       break;
+    case 'e':
+    case 'E':
+      intentarAtenderPaciente();
+      break
   }
   // Limitar a límites del mapa
   doctor.x = Math.max(0, Math.min(15.5, doctor.x));
-  doctor.y = Math.max(0, Math.min(11.5, doctor.y));
+  doctor.y = Math.max(0, Math.min(10.5, doctor.y));
 
   // Cambiar imagen del doctor según dirección
   if (!drawDoctor.images) drawDoctor.images = {};
@@ -64,7 +70,7 @@ window.addEventListener("keydown", (e) => {
 
   if (prev.x !== doctor.x || prev.y !== doctor.y) {
     drawScene(document.getElementById("game-canvas").getContext("2d"));
-    checkDoctorNearPatient();
+    mensaje_de_atencion();
   }
 });
 
@@ -109,7 +115,7 @@ function IniciarNivel(level) {
   ctx.msImageSmoothingEnabled = false;
 
   // Generar entidades aleatorias para el nivel
-  const numBeds = 3; // Número maximo de camas para el nivel
+  const numBeds = 4; // Número maximo de camas para el nivel
   const numMachines = 2; //numero de las mauinas para el nivel
   const cols = 17;
   const rows = 12;
@@ -122,27 +128,31 @@ function IniciarNivel(level) {
   const occupiedPositions = new Set();
   occupiedPositions.add(`${doctor.x},${doctor.y}`);
 
-  // Obtener posiciones aleatorias para camas y máquinas
-  const bedPositions = getRandomPositions(numBeds, cols, rows, occupiedPositions);
-  const machinePositions = getRandomPositions(numMachines, cols, rows, occupiedPositions);
-
-  // Asegurar que al menos una cama tenga paciente
-  let patientAssigned = false;
-  const beds = bedPositions.map((pos, i) => {
-    // Si es la última cama y aún no se ha asignado paciente, forzar que tenga paciente
-    let patient = Math.random() < 0.6;
-    if (i === bedPositions.length - 1 && !patientAssigned) {
-      patient = true;
-    }
-    if (patient) patientAssigned = true;
-    return {
-      type: "bed",
-      x: pos.x,
-      y: pos.y,
-      patient,
-      patientStatus: patient ? "sick" : null 
-    };
-  });
+  // Posiciones directas de las camas 
+  const bedPositions = [
+    { x: 4, y: 3 },
+    { x: 7, y: 3 },
+    { x: 10, y: 3 },
+    { x: 4, y: 7 },
+    { x: 7, y: 7 },
+    { x: 10, y: 7 },
+  ]
+  const machinePositions = [
+    { x: 5, y: 3 },
+    { x: 8, y: 3 },
+    { x: 11, y: 3 },
+    { x: 5, y: 7 },
+    { x: 8, y: 7 },
+    { x: 11, y: 7 },
+  ]
+  
+  const beds = bedPositions.map((pos) => ({
+    type: "bed",
+    x: pos.x,
+    y: pos.y,
+    patient: true,
+    patientStatus: "sick"
+  }));
 
   entities = [
     ...beds,
@@ -179,7 +189,7 @@ function getRandomPositions(count, cols, rows, occupied) {
 function drawScene(ctx) {
   const tileSize = 33; // tamaño de tile cuadrado para vista top-down
   const cols = 17;
-  const rows = 22;
+  const rows = 12;
   // Limpiar canvas con color de fondo del hospital
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   // Dibujar grid del suelo
@@ -248,7 +258,7 @@ function drawPixelFloorTile(ctx, x, y, size) {
     { base: "#E3F2FD", dark: "#B3E5FC", light: "#FFFFFF" }  // casi blanco
   ];
   // Usar posición para que el patrón sea consistente (no cambie en cada frame)
-  const idx = Math.abs(Math.floor(x / size) * 31 + Math.floor(y / size) * 17) % palettes.length;
+  const idx = Math.abs(Math.floor(x / size) * 32 + Math.floor(y / size) * 19) % palettes.length;
   const palette = palettes[idx];
 
   // Suelo base
@@ -340,47 +350,6 @@ function drawDoctor(ctx, x, y) {
   }
 }
 
-//funciion de cercania al paciente 
-function checkDoctorNearPatient() {
-  for (const entity of entities) {
-    if (entity.type === "bed" && entity.patient && entity.patientStatus !== "treated") {
-      const dx = Math.abs(doctor.x - entity.x);
-      const dy = Math.abs(doctor.y - entity.y);
-      if (dx + dy === 1) {
-        // Está al lado
-        mostrarInteraccionPaciente(entity);
-        return;
-      }
-    }
-  }
-}
-
-function checkDoctorNearPatient() {
-  const tileSize = 33;
-  const canvas = document.getElementById("game-canvas");
-  const dialogo = document.getElementById("dialogo-contextual");
-
-  for (const entity of entities) {
-    if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
-      const dx = Math.abs(doctor.x - entity.x);
-      const dy = Math.abs(doctor.y - entity.y);
-      if (dx + dy === 1) {
-        // Mostrar mensaje
-        const x = entity.x * tileSize + 50;
-        const y = entity.y * tileSize + 30;
-
-        dialogo.style.left = `${x}px`;
-        dialogo.style.top = `${y}px`;
-        dialogo.innerText = "Presiona [E] para atender";
-        dialogo.style.display = "block";
-        return;
-      }
-    }
-  }
-
-  dialogo.style.display = "none";
-}
-
 function drawPixelMachine(ctx, x, y, machineType) {
   let imgSrc, width, height;
   if (machineType === "xray") {
@@ -410,4 +379,52 @@ function drawPixelMachine(ctx, x, y, machineType) {
   if (img.loaded) {
     ctx.drawImage(img, x, y, width, height);
   }
+}
+
+//Mensaje de atender al paciente 
+function mensaje_de_atencion() {
+  const tileSize = 33;
+  const canvas = document.getElementById("game-canvas");
+  const dialogo = document.getElementById("dialogo-contextual");
+
+  for (const entity of entities) {
+    if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
+      const dx = Math.abs(doctor.x - entity.x);
+      const dy = Math.abs(doctor.y - entity.y);
+      if (dx + dy === 1) {
+        // Mostrar mensaje
+        const x = entity.x * tileSize + 50;
+        const y = entity.y * tileSize + 30;
+
+        dialogo.style.left = `${x}px`;
+        dialogo.style.top = `${y}px`;
+        dialogo.innerText = "Presiona [E] para atender";
+        dialogo.style.display = "block";
+        dialogo.style.fontFamily = "Consolas, 'Courier New', monospace";
+        return;
+      }
+    }
+  }
+
+  dialogo.style.display = "none";
+}
+
+function intentarAtenderPaciente() {
+  for (const entity of entities) {
+    if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
+      const dx = Math.abs(doctor.x - entity.x);
+      const dy = Math.abs(doctor.y - entity.y);
+      if (dx + dy === 1) {
+        mostrarModal("JUEGO DE PREGUNTAS");
+      }
+    }
+  }
+}
+
+
+
+
+function mostrarModal(mensaje) {
+  document.getElementById('modalMensaje').innerText = mensaje;
+  modal.show();
 }

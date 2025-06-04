@@ -281,16 +281,61 @@ body {
 
 /*Modal de MiniJuegos*/
 
+#modal-global {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* Se muestra con JavaScript */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Al frente de todo */
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Fondo oscuro */
+}
+
+.modal-contenido {
+  position: relative;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  z-index: 10000;
+  box-shadow: 0 0 20px black;
+  text-align: center;
+  font-family: 'Consolas', monospace;
+  max-width: 80%;
+}
+
+.modal-oculto {
+  display: none !important;
+}
+
+
+
+
 #dialogo-contextual {
   position: absolute;
-  background-color: #fff;
-  border: 2px solid #333;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-family: sans-serif;
-  font-size: 14px;
-  color: #000;
+  background: linear-gradient(90deg, #2979ff);
+  border: 3px solid #fffde7;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  color: #fffde7;
   z-index: 1000;
   pointer-events: none;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 24px #000a, 0 2px #00e676;
+  text-shadow:
+    1px 1px 2px #000,
+    0 0 8px #fffde7;
+  letter-spacing: 1px;
+  animation: floatArcade 3s ease-in-out infinite;
 }
