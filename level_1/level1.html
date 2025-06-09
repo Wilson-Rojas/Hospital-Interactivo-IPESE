@@ -2,11 +2,207 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Nivel 1 - Hospital Dash</title>
-  <link rel="stylesheet" href="../menu.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nivel difícil - Hospital Dash</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-image: url('../src/background/arcade.png');
+      background-repeat: no-repeat;
+      background-size: 58% 110vh;
+      background-position: top center;
+      background-color: #011e1e;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      margin: 0;
+      overflow: hidden;
+      min-height: 90vh;
+      width: 100vw;
+    }
+
+    /* Temporizador estilo reloj retro */
+    #timerElement {
+      font-size: 1.5rem;
+      font-family: 'Press Start 2P', monospace;
+      color: rgb(0, 229, 255);
+      background-color: #000;
+      padding: 10px 20px;
+      border: 2px solid rgb(0, 157, 255);
+      border-radius: 8px;
+      text-align: center;
+      width: fit-content;
+      margin: 10px auto;
+      box-shadow: 0 0 10px rgb(0, 225, 255), 0 0 5px rgb(0, 183, 255) inset;
+    }
+
+    .texto-celeste {
+      color: #00ffff;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 14px;
+      text-align: center;
+      display: block;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+
+    .subtitle {
+      flex-grow: 1;
+      text-align: center;
+      margin: 0;
+    }
+
+    .button_back {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+    }
+
+    /* Estilo retro para el modal */
+    .modal-content {
+      background-color: #111;
+      border: 3px solid #00ffff;
+      box-shadow: 0 0 10px #00ffff;
+      font-family: 'Press Start 2P', cursive;
+      color: #00ffff;
+    }
+
+    .modal-body .btn {
+      font-family: 'Press Start 2P', cursive;
+      background-color: #000;
+      border: 2px solid #00ffff;
+      color: #00ffff;
+      box-shadow: 0 0 5px #00ffff;
+    }
+
+    .modal-body .btn:hover {
+      background-color: #00ffff;
+      color: #000;
+    }
+  
+  </style>
+  
 </head>
 <body>
-  <canvas id="game-canvas" width="640" height="480"></canvas>
-  <script src="nivel1.js"></script>
+  <div class="transition-overlay"></div>
+  <div class="cortina" id="cortina"></div>
+  <div class="modal_juego">
+    <div id="dialogo-contextual" style="display:none;"></div>
+  </div>
+
+  <!-- Barra superior -->
+  <div class="header-bar">
+    <button class="button_back" onclick="back()">Exit</button>
+    <h1 class="subtitle">Sala de Urgencias Médicas</h1>
+  </div>
+  <!-- Temporizador -->
+  <div id="timerElement" style="position: absolute; top: 20px; right: 30px; font-size: 1.4rem; padding: 15px 35px;"></div>
+
+  <!-- Juego -->
+  <br>
+  <canvas id="game-canvas" width="670" height="490" style="
+    border-radius: 60px;
+    box-shadow: 0 0 10px #0e4b4b, 0 0 0 19px #1a6666 inset;
+    background: #1a6666;
+    border: 1px solid #0e4b4b;
+    display: block;
+    margin: 0 auto;
+  "></canvas>
+
+  <!-- Modal -->
+  <div class="modal fade" id="modalGlobal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center">
+        <div class="modal-body">
+          <p id="modalMensaje" class="texto-celeste"></p>
+          <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Temporizador estilo juego retro -->
+  <script>
+    let tiempoRestante = 5;
+    const timerElement = document.getElementById('timerElement');
+
+    function actualizarTemporizador() {
+      const minutos = Math.floor(tiempoRestante / 60);
+      const segundos = tiempoRestante % 60;
+      timerElement.textContent =
+        `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+
+      if (tiempoRestante > 0) {
+        tiempoRestante--;
+      } else {
+        clearInterval(intervalo);
+        mostrarModalTiempoAgotado();
+      }
+    }
+    const intervalo = setInterval(actualizarTemporizador, 1000);
+
+    function mostrarModalTiempoAgotado() {
+      const mensaje = `
+        <span class="texto-celeste" style="
+          display: inline-block;
+          background: #000;
+          border: 3px solid #00ffff;
+          box-shadow: 0 0 10px #00ffff, 0 0 5px #00ffff inset;
+          padding: 20px 30px;
+          font-size: 1.1rem;
+          letter-spacing: 2px;
+          text-shadow: 0 0 5px #00ffff, 0 0 2px #00ffff;
+        ">
+          <span style="font-size:1.3em;">&#9728; GAME OVER &#9728;</span><br>
+          <span style="font-size:1em;">¡NDE TAVY!</span><br>
+
+        </span>
+      `;
+      const modalMensaje = document.getElementById('modalMensaje');
+      modalMensaje.innerHTML = mensaje;
+
+      const modalElement = document.getElementById('modalGlobal');
+      const modal = new bootstrap.Modal(modalElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      modal.show();
+
+      const cerrarBtn = modalElement.querySelector('.btn');
+      cerrarBtn.textContent = 'Ir al inicio';
+      cerrarBtn.style.background = '#00ffff';
+      cerrarBtn.style.color = '#000';
+      cerrarBtn.style.border = '2px solid #00ffff';
+      cerrarBtn.style.fontFamily = "'Press Start 2P', cursive";
+      cerrarBtn.style.boxShadow = '0 0 5px #00ffff';
+      cerrarBtn.onmouseover = function() {
+        cerrarBtn.style.background = '#000';
+        cerrarBtn.style.color = '#00ffff';
+      };
+      cerrarBtn.onmouseout = function() {
+        cerrarBtn.style.background = '#00ffff';
+        cerrarBtn.style.color = '#000';
+      };
+      cerrarBtn.onclick = function () {
+        window.location.href = '../index.html';
+      };
+    }
+
+    function back() {
+      window.location.href = '../index.html';
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="level1.js"></script>
+
+  <div class="transition-overlay" id="apagado-overlay"></div>
 </body>
 </html>
