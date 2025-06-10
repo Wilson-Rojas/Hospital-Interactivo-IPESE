@@ -421,10 +421,55 @@ function intentarAtenderPaciente() {
   }
 }
 
-
-
-
 function mostrarModal(mensaje) {
   document.getElementById('modalMensaje').innerText = mensaje;
+
+  const preguntaID = Math.floor(Math.random() * 5) + 1;
+  mostrarPregunta(preguntaID);
+
   modal.show();
+}
+
+
+function mostrarPregunta(numero) {
+  const contenedor = document.getElementById('pregunta-container');
+  contenedor.innerHTML = ""; // limpiar anterior
+
+  let pregunta = "";
+  let opciones = [];
+
+  switch (numero) {
+    case 1:
+      pregunta = "¿Cuál es la temperatura normal del cuerpo humano?";
+      opciones = ["36-37°C", "38-39°C", "34-35°C"];
+      break;
+    case 2:
+      pregunta = "¿Cuál es el órgano principal del sistema circulatorio?";
+      opciones = ["Corazón", "Pulmón", "Riñón"];
+      break;
+    case 3:
+      pregunta = "¿Qué significa 'ICU'?";
+      opciones = ["Unidad de Cuidados Intensivos", "Unidad Clínica Única", "Inyección Cardiaca Urgente"];
+      break;
+    case 4:
+      pregunta = "¿Cuál es el antiséptico más usado?";
+      opciones = ["Alcohol", "Azúcar", "Aceite"];
+      break;
+    case 5:
+      pregunta = "¿Qué examen se usa para ver huesos rotos?";
+      opciones = ["Radiografía", "Resonancia", "Endoscopía"];
+      break;
+  }
+
+  const htmlOpciones = opciones.map((op, i) => `
+    <label>
+      <input type="radio" name="respuesta" value="${op}"> ${op}
+    </label><br>
+  `).join("");
+
+  contenedor.innerHTML = `
+    <p><strong>${pregunta}</strong></p>
+    ${htmlOpciones}
+    <button onclick="validarRespuesta(${numero})">Enviar</button>
+  `;
 }
