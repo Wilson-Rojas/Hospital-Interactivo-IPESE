@@ -9,17 +9,31 @@
 
   <style>
     body {
-      background-image: url('../src/background/arcade_background.png');
+      background-image: url('../src/background/arcade.png');
       background-repeat: no-repeat;
-      background-size: contain;
+      background-size: 58% 110vh;
       background-position: top center;
-      background-color: #212750;
+      background-color: #011e1e;
       color: #fff;
       font-family: 'Press Start 2P', cursive;
       margin: 0;
       overflow: hidden;
-      min-height: 100vh;
+      min-height: 90vh;
       width: 100vw;
+    }
+
+    /* Responsive background for smaller screens */
+    @media (max-width: 900px) {
+      body {
+        background-size: cover;
+        background-position: center top;
+      }
+    }
+    @media (max-width: 600px) {
+      body {
+        background-size: 100% 100vh;
+        background-position: center top;
+      }
     }
   </style>
 </head>
@@ -36,12 +50,14 @@
   <br>
   <canvas id="game-canvas" width="640" height="480"></canvas>
   <!-- Modal -->
-  <div class="modal fade" id="modalGlobal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center">
+  <div class="modal fade" id="modalGlobal" tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-white text-center">
         <div class="modal-body">
-          <p class="subtitle" id="modalMensaje" class="fs-5"></p>
-          <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">Cerrar</button>
+          <p id="modalMensaje" class="fs-5"></p>
+          <div id="pregunta-container">
+          </div>
+          <button type="button" class="btn btn-secondary mt-3" onclick="habilitar_Movimiento()" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
     </div>

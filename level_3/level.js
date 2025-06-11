@@ -1,6 +1,8 @@
 let entities = [];
 let doctor = [];
 const modal = new bootstrap.Modal(document.getElementById('modalGlobal'));
+let entradaHabilitada = true;
+
 
 window.addEventListener("load", () => {
   const cortina = document.getElementById("cortina");
@@ -17,6 +19,9 @@ window.addEventListener("load", () => {
 
 //movilidad del doctor 
 window.addEventListener("keydown", (e) => {
+  if (!entradaHabilitada) {
+    return; // Desactiva teclas si está bloqueado
+  }
   const prev = { x: doctor.x, y: doctor.y };
   let direction = "frente";
 
@@ -183,9 +188,6 @@ function getRandomPositions(count, cols, rows, occupied) {
     return { x, y };
   });
 }
-
-
-
 function drawScene(ctx) {
   const tileSize = 33; // tamaño de tile cuadrado para vista top-down
   const cols = 17;
@@ -422,22 +424,23 @@ function intentarAtenderPaciente() {
 }
 
 function mostrarModal(mensaje) {
+  entradaHabilitada = false; // Desactivar entrada mientras se atiende
   document.getElementById('modalMensaje').innerText = mensaje;
-
   const preguntaID = Math.floor(Math.random() * 5) + 1;
   mostrarPregunta(preguntaID);
 
   modal.show();
 }
 
+function habilitar_Movimiento(){
+  entradaHabilitada = true; // Reactivar entrada
+}
 
 function mostrarPregunta(numero) {
   const contenedor = document.getElementById('pregunta-container');
   contenedor.innerHTML = ""; // limpiar anterior
-
   let pregunta = "";
   let opciones = [];
-
   switch (numero) {
     case 1:
       pregunta = "¿Cuál es la temperatura normal del cuerpo humano?";
@@ -463,7 +466,7 @@ function mostrarPregunta(numero) {
 
   const htmlOpciones = opciones.map((op, i) => `
     <label>
-      <input type="radio" name="respuesta" value="${op}"> ${op}
+      <input class="opciones_pregunta" type="radio" name="respuesta" value="${op}"> ${op}
     </label><br>
   `).join("");
 

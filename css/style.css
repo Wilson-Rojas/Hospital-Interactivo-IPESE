@@ -278,49 +278,7 @@ body {
   background-color: transparent;
   display: block;
 }
-
-/*Modal de MiniJuegos*/
-
-#modal-global {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none; /* Se muestra con JavaScript */
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; /* Al frente de todo */
-}
-
-.modal-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* Fondo oscuro */
-}
-
-.modal-contenido {
-  position: relative;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  z-index: 10000;
-  box-shadow: 0 0 20px black;
-  text-align: center;
-  font-family: 'Consolas', monospace;
-  max-width: 80%;
-}
-
-.modal-oculto {
-  display: none !important;
-}
-
-
-
-
+/* ===== ESTILOS DEL DIALOGO CONTEXTUAL ===== */
 #dialogo-contextual {
   position: absolute;
   background: linear-gradient(90deg, #2979ff);
@@ -338,4 +296,42 @@ body {
     0 0 8px #fffde7;
   letter-spacing: 1px;
   animation: floatArcade 3s ease-in-out infinite;
+}
+/* ===== ESTILOS DE LAS OPCIONES DE PREGUNTA ===== */
+.opciones_pregunta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+}
+
+.opciones_pregunta input[type="radio"] {
+  accent-color: #2979ff; /* Color azul retro para el radio */
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.opciones_pregunta label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 15px;
+  color: #fffde7;
+  cursor: pointer;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #fffde7;
+  transition: color 0.2s;
+}
+
+.opciones_pregunta input[type="radio"]:checked + span {
+  color: #00e676; /* Verde brillante cuando está seleccionado */
+  text-shadow: 0 0 8px #00e676, 1px 1px 2px #000;
+}
+
+.opciones_pregunta input[type="radio"]:focus-visible {
+  outline: 2px solid #fff700;
+  outline-offset: 2px;
 }
