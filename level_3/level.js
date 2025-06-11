@@ -2,7 +2,7 @@ let entities = [];
 let doctor = [];
 const modal = new bootstrap.Modal(document.getElementById('modalGlobal'));
 let entradaHabilitada = true;
-
+let respuestaCorrecta = "";
 
 window.addEventListener("load", () => {
   const cortina = document.getElementById("cortina");
@@ -445,22 +445,27 @@ function mostrarPregunta(numero) {
     case 1:
       pregunta = "¿Cuál es la temperatura normal del cuerpo humano?";
       opciones = ["36-37°C", "38-39°C", "34-35°C"];
+      respuestaCorrecta = "36-37°C";
       break;
     case 2:
       pregunta = "¿Cuál es el órgano principal del sistema circulatorio?";
       opciones = ["Corazón", "Pulmón", "Riñón"];
+      respuestaCorrecta = "Corazón";
       break;
     case 3:
       pregunta = "¿Qué significa 'ICU'?";
       opciones = ["Unidad de Cuidados Intensivos", "Unidad Clínica Única", "Inyección Cardiaca Urgente"];
+      respuestaCorrecta = "Unidad de Cuidados Intensivos";
       break;
     case 4:
       pregunta = "¿Cuál es el antiséptico más usado?";
       opciones = ["Alcohol", "Azúcar", "Aceite"];
+      respuestaCorrecta = "Alcohol";
       break;
     case 5:
       pregunta = "¿Qué examen se usa para ver huesos rotos?";
       opciones = ["Radiografía", "Resonancia", "Endoscopía"];
+      respuestaCorrecta = "Radiografía";
       break;
   }
 
@@ -473,6 +478,27 @@ function mostrarPregunta(numero) {
   contenedor.innerHTML = `
     <p><strong>${pregunta}</strong></p>
     ${htmlOpciones}
-    <button onclick="validarRespuesta(${numero})">Enviar</button>
+    <button onclick="Responder()">Enviar</button>
   `;
 }
+
+function Responder() {
+  try {
+    const respuestaUsuario = document.querySelector('input[name="respuesta"]:checked')?.value;
+
+    if (!respuestaUsuario) {
+      alert("Por favor selecciona una respuesta");
+      return;
+    }
+    console.log("Respuesta enviada para la pregunta:", respuestaUsuario, respuestaCorrecta);
+    if(respuestaCorrecta === respuestaCorrecta){
+      
+    }else{
+
+    }
+  } catch (error) {
+    console.error("Error al procesar la respuesta:", error);
+    alert("Ocurrió un error al enviar la respuesta.");
+  }
+}
+
