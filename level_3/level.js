@@ -23,6 +23,7 @@ window.addEventListener("keydown", (e) => {
     return; // Desactiva teclas si está bloqueado
   }
   const prev = { x: doctor.x, y: doctor.y };
+  
   let direction = "frente";
 
   switch (e.key) {
@@ -470,14 +471,16 @@ function mostrarPregunta(numero) {
   }
 
   const htmlOpciones = opciones.map((op, i) => `
-    <label>
-      <input class="opciones_pregunta" type="radio" name="respuesta" value="${op}"> ${op}
-    </label><br>
+      <label style="display:inline-flex;align-items:center;margin-right:12px;">
+        <input class="opciones_pregunta" type="radio" name="respuesta" value="${op}" id="opcion${i}" style="margin-right:4px; margin-top:4px;">
+        ${op}
+      </label>
   `).join("");
 
   contenedor.innerHTML = `
     <p><strong>${pregunta}</strong></p>
     ${htmlOpciones}
+    <br>
     <button onclick="Responder()">Enviar</button>
   `;
 }
@@ -485,16 +488,15 @@ function mostrarPregunta(numero) {
 function Responder() {
   try {
     const respuestaUsuario = document.querySelector('input[name="respuesta"]:checked')?.value;
-
-    if (!respuestaUsuario) {
-      alert("Por favor selecciona una respuesta");
-      return;
+    const respuestaContainer = document.getElementById('respuesta-container');
+    if (respuestaUsuario == undefined) {
+      respuestaContainer.innerHTML = '<span style="color:orange;font-weight:bold;">Por favor selecciona una respuesta</span>';
+      return
     }
-    console.log("Respuesta enviada para la pregunta:", respuestaUsuario, respuestaCorrecta);
-    if(respuestaCorrecta === respuestaCorrecta){
-      
-    }else{
-
+    if (respuestaUsuario === respuestaCorrecta) {
+      respuestaContainer.innerHTML = '<span style="color:green;font-weight:bold;">¡Respuesta correcta!</span>';
+    } else {
+      respuestaContainer.innerHTML = '<span style="color:red;font-weight:bold;">Respuesta incorrecta.</span>';
     }
   } catch (error) {
     console.error("Error al procesar la respuesta:", error);
