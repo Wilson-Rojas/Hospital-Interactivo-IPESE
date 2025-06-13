@@ -524,7 +524,10 @@ function Responder() {
         }
       }
       drawScene(document.getElementById("game-canvas").getContext("2d"));
-
+      setTimeout(() =>{
+        habilitar_Movimiento();
+        modal.hide()
+      },2500);
     } else {
       respuestaContainer.innerHTML = '<span style="color:red;font-weight:bold;">Respuesta incorrecta.</span>';
     }
