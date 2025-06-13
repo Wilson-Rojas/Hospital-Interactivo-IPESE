@@ -48,6 +48,23 @@ window.addEventListener("keydown", (e) => {
       intentarAtenderPaciente();
       break
   }
+
+  const destinoX = doctor.x;
+  const destinoY = doctor.y;
+
+  // Evitar caminar sobre camas
+  const hayCamaEnDestino = entities.some(e => 
+    e.type === "bed" &&
+    Math.abs(destinoX - e.x) < 1 &&
+    Math.abs(destinoY - e.y) < 1.1
+  );
+
+  if (hayCamaEnDestino) {
+    doctor.x = prev.x;
+    doctor.y = prev.y;
+    return;
+  }
+
   // Limitar a límites del mapa
   doctor.x = Math.max(0, Math.min(15.5, doctor.x));
   doctor.y = Math.max(0, Math.min(10.5, doctor.y));
@@ -136,20 +153,14 @@ function IniciarNivel(level) {
 
   // Posiciones directas de las camas 
   const bedPositions = [
-    { x: 4, y: 3 },
+    { x: 4, y: 6 },
     { x: 7, y: 3 },
-    { x: 10, y: 3 },
-    { x: 4, y: 7 },
-    { x: 7, y: 7 },
-    { x: 10, y: 7 },
+    { x: 10, y: 6 },
   ]
   const machinePositions = [
-    { x: 5, y: 3 },
+    { x: 5, y: 6 },
     { x: 8, y: 3 },
-    { x: 11, y: 3 },
-    { x: 5, y: 7 },
-    { x: 8, y: 7 },
-    { x: 11, y: 7 },
+    { x: 11, y: 6 },
   ]
   
   const beds = bedPositions.map((pos) => ({
@@ -287,7 +298,7 @@ function drawPixelFloorTile(ctx, x, y, size) {
 
 function drawPixelBed(ctx, x, y) {
   const tileSize = 25;
-  const bedWidth = tileSize * 2;
+  const bedWidth = tileSize * 2.2;
   const bedHeight = tileSize * 3;
   if (!drawPixelBed.bedImage) {
     drawPixelBed.bedImage = new Image();
@@ -434,6 +445,8 @@ function mostrarModal(mensaje) {
 }
 
 function habilitar_Movimiento(){
+  const contenedor = document.getElementById('respuesta-container');
+  contenedor.innerHTML = ""; // Limpiar respuesta anterior
   entradaHabilitada = true; // Reactivar entrada
 }
 
@@ -445,28 +458,33 @@ function mostrarPregunta(numero) {
   switch (numero) {
     case 1:
       pregunta = "¿Cuál es la temperatura normal del cuerpo humano?";
-      opciones = ["36-37°C", "38-39°C", "34-35°C"];
+      opciones = ["38-39°C", "36-37°C", "34-35°C"];
       respuestaCorrecta = "36-37°C";
       break;
     case 2:
       pregunta = "¿Cuál es el órgano principal del sistema circulatorio?";
-      opciones = ["Corazón", "Pulmón", "Riñón"];
+      opciones = ["Pulmón", "Corazón", "Riñón"];
       respuestaCorrecta = "Corazón";
       break;
     case 3:
       pregunta = "¿Qué significa 'ICU'?";
-      opciones = ["Unidad de Cuidados Intensivos", "Unidad Clínica Única", "Inyección Cardiaca Urgente"];
+      opciones = ["Unidad Clínica Única", "Unidad de Cuidados Intensivos", "Inyección Cardiaca Urgente"];
       respuestaCorrecta = "Unidad de Cuidados Intensivos";
       break;
     case 4:
       pregunta = "¿Cuál es el antiséptico más usado?";
-      opciones = ["Alcohol", "Azúcar", "Aceite"];
+      opciones = ["Azúcar", "Alcohol", "Aceite"];
       respuestaCorrecta = "Alcohol";
       break;
     case 5:
-      pregunta = "¿Qué examen se usa para ver huesos rotos?";
-      opciones = ["Radiografía", "Resonancia", "Endoscopía"];
-      respuestaCorrecta = "Radiografía";
+      pregunta = "¿Qué vitamina se obtiene principalmente del sol?";
+      opciones = ["Vitamina D", "Vitamina C", "Vitamina A"];
+      respuestaCorrecta = "Vitamina D";
+      break;
+    case 6:
+      pregunta = "¿Cuál es el órgano encargado de filtrar la sangre?";
+      opciones = ["Riñón", "Hígado", "Corazón"];
+      respuestaCorrecta = "Riñón";
       break;
   }
 
@@ -495,6 +513,18 @@ function Responder() {
     }
     if (respuestaUsuario === respuestaCorrecta) {
       respuestaContainer.innerHTML = '<span style="color:green;font-weight:bold;">¡Respuesta correcta!</span>';
+      for (const entity of entities) {
+        if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
+          const dx = Math.abs(doctor.x - entity.x);
+          const dy = Math.abs(doctor.y - entity.y);
+          if (dx + dy === 1) {
+            entity.patientStatus = "treated";
+            break;
+          }
+        }
+      }
+      drawScene(document.getElementById("game-canvas").getContext("2d"));
+
     } else {
       respuestaContainer.innerHTML = '<span style="color:red;font-weight:bold;">Respuesta incorrecta.</span>';
     }
