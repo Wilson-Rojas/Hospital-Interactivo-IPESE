@@ -1,6 +1,9 @@
 let entities = [];
 let doctor = [];
 const modal = new bootstrap.Modal(document.getElementById('modalGlobal'));
+const contenedor = document.getElementById('pregunta-container');
+const respuestaContainer = document.getElementById('respuesta-container');
+
 let entradaHabilitada = true;
 let respuestaCorrecta = "";
 
@@ -181,6 +184,7 @@ function IniciarNivel(level) {
     }))
   ];
   drawScene(ctx);
+  
 }
 
 //funcionalidad para obtener valores ramdons 
@@ -451,7 +455,6 @@ function habilitar_Movimiento(){
 }
 
 function mostrarPregunta(numero) {
-  const contenedor = document.getElementById('pregunta-container');
   contenedor.innerHTML = ""; // limpiar anterior
   let pregunta = "";
   let opciones = [];
@@ -506,13 +509,13 @@ function mostrarPregunta(numero) {
 function Responder() {
   try {
     const respuestaUsuario = document.querySelector('input[name="respuesta"]:checked')?.value;
-    const respuestaContainer = document.getElementById('respuesta-container');
     if (respuestaUsuario == undefined) {
       respuestaContainer.innerHTML = '<span style="color:orange;font-weight:bold;">Por favor selecciona una respuesta</span>';
       return
     }
     if (respuestaUsuario === respuestaCorrecta) {
       respuestaContainer.innerHTML = '<span style="color:green;font-weight:bold;">¡Respuesta correcta!</span>';
+      contenedor.innerHTML = ""; // limpiar anterior
       for (const entity of entities) {
         if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
           const dx = Math.abs(doctor.x - entity.x);
