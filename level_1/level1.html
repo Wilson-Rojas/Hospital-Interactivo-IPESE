@@ -86,7 +86,19 @@
       background-color: #00ffff;
       color: #000;
     }
-  
+   /* Responsive background for smaller screens */
+    @media (max-width: 900px) {
+      body {
+        background-size: cover;
+        background-position: center top;
+      }
+    }
+    @media (max-width: 600px) {
+      body {
+        background-size: 100% 100vh;
+        background-position: center top;
+      }
+    }
   </style>
   
 </head>
@@ -117,89 +129,22 @@
   "></canvas>
 
   <!-- Modal -->
-  <div class="modal fade" id="modalGlobal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content text-center">
+  <div class="modal fade" id="modalGlobal" tabindex="-1" aria-hidden="true" aria-labelledby="staticBackdropLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-white text-center">
         <div class="modal-body">
-          <p id="modalMensaje" class="texto-celeste"></p>
-          <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">Cerrar</button>
+          <p id="modalMensaje" class="fs-5"></p>
+          <div id="pregunta-container">
+          </div>
+          <div id="respuesta-container"> 
+          </div>
+          <button type="button" class="btn btn-secondary mt-3" onclick="habilitar_Movimiento()" data-bs-dismiss="modal">Cerrar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Temporizador estilo juego retro -->
-  <script>
-    let tiempoRestante = 5;
-    const timerElement = document.getElementById('timerElement');
-
-    function actualizarTemporizador() {
-      const minutos = Math.floor(tiempoRestante / 60);
-      const segundos = tiempoRestante % 60;
-      timerElement.textContent =
-        `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
-
-      if (tiempoRestante > 0) {
-        tiempoRestante--;
-      } else {
-        clearInterval(intervalo);
-        mostrarModalTiempoAgotado();
-      }
-    }
-    const intervalo = setInterval(actualizarTemporizador, 1000);
-
-    function mostrarModalTiempoAgotado() {
-      const mensaje = `
-        <span class="texto-celeste" style="
-          display: inline-block;
-          background: #000;
-          border: 3px solid #00ffff;
-          box-shadow: 0 0 10px #00ffff, 0 0 5px #00ffff inset;
-          padding: 20px 30px;
-          font-size: 1.1rem;
-          letter-spacing: 2px;
-          text-shadow: 0 0 5px #00ffff, 0 0 2px #00ffff;
-        ">
-          <span style="font-size:1.3em;">&#9728; GAME OVER &#9728;</span><br>
-          <span style="font-size:1em;">¡NDE TAVY!</span><br>
-
-        </span>
-      `;
-      const modalMensaje = document.getElementById('modalMensaje');
-      modalMensaje.innerHTML = mensaje;
-
-      const modalElement = document.getElementById('modalGlobal');
-      const modal = new bootstrap.Modal(modalElement, {
-        backdrop: 'static',
-        keyboard: false
-      });
-      modal.show();
-
-      const cerrarBtn = modalElement.querySelector('.btn');
-      cerrarBtn.textContent = 'Ir al inicio';
-      cerrarBtn.style.background = '#00ffff';
-      cerrarBtn.style.color = '#000';
-      cerrarBtn.style.border = '2px solid #00ffff';
-      cerrarBtn.style.fontFamily = "'Press Start 2P', cursive";
-      cerrarBtn.style.boxShadow = '0 0 5px #00ffff';
-      cerrarBtn.onmouseover = function() {
-        cerrarBtn.style.background = '#000';
-        cerrarBtn.style.color = '#00ffff';
-      };
-      cerrarBtn.onmouseout = function() {
-        cerrarBtn.style.background = '#00ffff';
-        cerrarBtn.style.color = '#000';
-      };
-      cerrarBtn.onclick = function () {
-        window.location.href = '../index.html';
-      };
-    }
-
-    function back() {
-      window.location.href = '../index.html';
-    }
-  </script>
-
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="level1.js"></script>
 
