@@ -158,12 +158,12 @@ function IniciarNivel(level) {
     { x: 3, y: 1 },
     { x: 7, y: 1 },
     { x: 11, y: 1 },
-    { x: 15, y: 1},
+   /* { x: 15, y: 1},
     //camas bajas
     { x: 3, y: 8 },
     { x: 7, y: 8 },
     { x: 11, y: 8 },
-    { x: 15, y: 8 }
+    { x: 15, y: 8 }*/
   ]
   const machinePositions = [
     { x: 4, y: 1 },
@@ -553,7 +553,7 @@ function Responder() {
 }
  //Temporizador estilo juego retro
 
-    let tiempoRestante = 200; // 200 segundos (3 minutos y 20 segundos)
+    let tiempoRestante = 120 ; // 200 segundos (3 minutos y 20 segundos)
     const timerElement = document.getElementById('timerElement');
 
     function actualizarTemporizador() {
@@ -689,6 +689,7 @@ function Responder() {
         
       }
     }
+ 
     /* Modal de juego completado (nivel terminado).*/
 
     function mostrarModalFinDeJuego() {
@@ -802,4 +803,279 @@ function Responder() {
         console.error("Error al procesar la respuesta:", error);
         alert("Ocurrió un error al enviar la respuesta.");
       }
+    };
+    //minijuego
+    // aparece antes de responder la pregunta, y tras completarlo se puede responder
+
+    let minijuegoEnCurso = false;
+    let juegoTerminadoPorTiempo = false; // Para evitar sobrescribir el modal de tiempo agotado
+
+    function mostrarMinijuegoAntesDePregunta(callback) {
+      minijuegoEnCurso = true;
+      let overlay = document.getElementById('minijuegoOverlay');
+      if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'minijuegoOverlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.background = 'rgba(0,0,0,0.95)';
+      overlay.style.zIndex = 10001;
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      document.body.appendChild(overlay);
+      }
+      overlay.innerHTML = `
+      <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
+        <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
+        <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
+        <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
+      </div>
+      `;
+      overlay.style.display = 'flex';
+      entradaHabilitada = false;
+
+      minijuego(function(resultado) {
+      minijuegoEnCurso = false;
+      // Si el modal de tiempo agotado está activo, superponerlo y quitar el minijuego
+      if (juegoTerminadoPorTiempo) {
+        if (overlay) overlay.remove();
+        return;
+      }
+      overlay.remove();
+      if (typeof callback === "function") callback(resultado);
+      });
+    }
+
+    // minijuego recibe un callback que se llama al ganar o perder
+    function minijuego(onFinish) {
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      var ballRadius = 10;
+      var x = canvas.width/2;
+      var y = canvas.height-30;
+      var dx = 2;
+      var dy = -2;
+      var paddleHeight = 10;
+      var paddleWidth = 75;
+      var paddleX = (canvas.width-paddleWidth)/2;
+      var rightPressed = false;
+      var leftPressed = false;
+      var brickRowCount = 5;
+      var brickColumnCount = 3;
+      var brickWidth = 75;
+      var brickHeight = 20;
+      var brickPadding = 10;
+      var brickOffsetTop = 30;
+      var brickOffsetLeft = 30;
+      var score = 0;
+      var lives = 3;
+      var finished = false;
+
+      var bricks = [];
+      for(var c=0; c<brickColumnCount; c++) {
+        bricks[c] = [];
+        for(var r=0; r<brickRowCount; r++) {
+          bricks[c][r] = { x: 0, y: 0, status: 1 };
+        }
+      }
+
+      function cleanup() {
+      document.removeEventListener("keydown", keyDownHandler, false);
+      document.removeEventListener("keyup", keyUpHandler, false);
+      document.removeEventListener("mousemove", mouseMoveHandler, false);
+      }
+
+      document.addEventListener("keydown", keyDownHandler, false);
+      document.addEventListener("keyup", keyUpHandler, false);
+      document.addEventListener("mousemove", mouseMoveHandler, false);
+
+      function keyDownHandler(e) {
+        if(e.code  == "ArrowRight") {
+          rightPressed = true;
+        }
+        else if(e.code == 'ArrowLeft') {
+          leftPressed = true;
+        }
+      }
+      function keyUpHandler(e) {
+        if(e.code == 'ArrowRight') {
+          rightPressed = false;
+        }
+        else if(e.code == 'ArrowLeft') {
+          leftPressed = false;
+        }
+      }
+      function mouseMoveHandler(e) {
+        var relativeX = e.clientX - canvas.getBoundingClientRect().left;
+        if(relativeX > 0 && relativeX < canvas.width) {
+          paddleX = relativeX - paddleWidth/2;
+        }
+      }
+      function collisionDetection() {
+        for(var c=0; c<brickColumnCount; c++) {
+          for(var r=0; r<brickRowCount; r++) {
+            var b = bricks[c][r];
+            if(b.status == 1) {
+              if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+                dy = -dy;
+                b.status = 0;
+                score++;
+                if(score == brickRowCount*brickColumnCount) {
+                  finished = true;
+                  cleanup();
+                  setTimeout(() => {
+                  if (typeof onFinish === "function") onFinish("win");
+                  }, 500);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+      function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
+      function drawBricks() {
+        for(var c=0; c<brickColumnCount; c++) {
+          for(var r=0; r<brickRowCount; r++) {
+            if(bricks[c][r].status == 1) {
+              var brickX = (r*(brickWidth+brickPadding))+brickOffsetLeft;
+              var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
+              bricks[c][r].x = brickX;
+              bricks[c][r].y = brickY;
+              ctx.beginPath();
+              ctx.rect(brickX, brickY, brickWidth, brickHeight);
+              ctx.fillStyle = "#0095DD";
+              ctx.fill();
+              ctx.closePath();
+            }
+          }
+        }
+      }
+      function drawScore() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#00ffff";
+        ctx.fillText("Score: "+score, 8, 20);
+      }
+      function drawLives() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#00ffff";
+        ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+      }
+
+      function draw() {
+        if (finished || juegoTerminadoPorTiempo) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBricks();
+        drawBall();
+        drawPaddle();
+        drawScore();
+        drawLives();
+        collisionDetection();
+
+        if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+          dx = -dx;
+        }
+        if(y + dy < ballRadius) {
+          dy = -dy;
+        }
+        else if(y + dy > canvas.height-ballRadius) {
+          if(x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy;
+          }
+          else {
+            lives--;
+            if(!lives) {
+              finished = true;
+              cleanup();
+              setTimeout(() => {
+              // Si el juego ya terminó por tiempo, no mostrar nada más
+              if (juegoTerminadoPorTiempo) return;
+              // Si pierdes las 3 vidas, mostrar el modal de tiempo agotado y superponerlo
+              juegoTerminadoPorTiempo = true;
+              mostrarModalTiempoAgotado(true); // true para indicar que debe superponerse
+              if (typeof onFinish === "function") onFinish("lose");
+              }, 500);
+            }
+            else {
+              x = canvas.width/2;
+              y = canvas.height-30;
+              dx = 2;
+              dy = -2;
+              paddleX = (canvas.width-paddleWidth)/2;
+            }
+          }
+        }
+
+        if(rightPressed && paddleX < canvas.width-paddleWidth) {
+          paddleX += 7;
+        }
+        else if(leftPressed && paddleX > 0) {
+          paddleX -= 7;
+        }
+
+        x += dx;
+        y += dy;
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    }
+
+    // Sobrescribe mostrarModal para lanzar minijuego antes de mostrar la pregunta
+    const originalMostrarModal = mostrarModal;
+    mostrarModal = function(mensaje) {
+      // Si el juego terminó por tiempo, no mostrar nada
+      if (juegoTerminadoPorTiempo) return;
+      entradaHabilitada = false;
+      // Lanzar minijuego primero
+      mostrarMinijuegoAntesDePregunta((resultado) => {
+      // Si el juego terminó por tiempo durante el minijuego, no mostrar la pregunta
+      if (juegoTerminadoPorTiempo) return;
+      // Si perdió el minijuego, no mostrar la pregunta
+      if (resultado === "lose") return;
+      // Cuando termine el minijuego y gane, mostrar la pregunta
+      document.getElementById('modalMensaje').innerText = mensaje;
+      const preguntaID = Math.floor(Math.random() * 5) + 1;
+      mostrarPregunta(preguntaID);
+      modal.show();
+      entradaHabilitada = true;
+      });
+    };
+
+    // Sobrescribe mostrarModalTiempoAgotado para marcar el juego como terminado
+    const originalMostrarModalTiempoAgotado = mostrarModalTiempoAgotado;
+    mostrarModalTiempoAgotado = function(superponer) {
+      juegoTerminadoPorTiempo = true;
+      // Si hay overlay del minijuego, ciérralo antes de mostrar el modal de tiempo agotado
+      let minijuegoOverlay = document.getElementById('minijuegoOverlay');
+      if (minijuegoOverlay) {
+        minijuegoOverlay.remove();
+      }
+      // Si hay que superponer, asegura el z-index
+      if (superponer) {
+        setTimeout(() => {
+          let overlay = document.getElementById('modalTiempoOverlay');
+          if (overlay) {
+            overlay.style.zIndex = 10002;
+          }
+        }, 10);
+      }
+      originalMostrarModalTiempoAgotado();
     };
