@@ -126,6 +126,32 @@ function back(){
   }, { once: true });
 }
 
+function play_again(){
+  const button = event.target;
+  button.style.animation = 'none';
+  button.offsetHeight; // trigger reflow
+  button.style.animation = 'blink 0.5s ease-in-out 3'; 
+
+  // Esperar a que termine la animación antes de iniciar el juego
+  button.addEventListener('animationend', function handler() {
+    button.removeEventListener('animationend', handler);
+    const overlay = document.querySelector('.transition-overlay');
+
+    // Activar la animación de la cortina
+    if (overlay) {
+      overlay.classList.add('active');
+      // Esperar la animación antes de redirigir
+      setTimeout(() => {
+        window.location.reload(); // Recargar la página para reiniciar el juego
+      }, 800); // Tiempo sincronizado con la duración de la animación
+    } else {
+      // Si no hay overlay, redirigir inmediatamente
+        window.location.reload(); // Recargar la página para reiniciar el juego
+    }
+  }, { once: true });
+}
+
+
 function IniciarNivel(level) {
   // Simulación de sonido retro y efecto de animación
   console.log("Iniciando el Nivel", level);
@@ -527,12 +553,17 @@ function Responder() {
         }
       }
       drawScene(document.getElementById("game-canvas").getContext("2d"));
+      verificar_atendidos();
       setTimeout(() =>{
         habilitar_Movimiento();
         modal.hide()
       },2500);
     } else {
       respuestaContainer.innerHTML = '<span style="color:red;font-weight:bold;">Respuesta incorrecta.</span>';
+      setTimeout(() =>{
+        habilitar_Movimiento();
+        modal.hide()
+      },2500);
     }
   } catch (error) {
     console.error("Error al procesar la respuesta:", error);
@@ -540,3 +571,26 @@ function Responder() {
   }
 }
 
+function mostrarModalfinal(mensaje) {
+  entradaHabilitada = false; // Desactivar entrada mientras se atiende
+  document.getElementById('modalMensaje').innerText = mensaje;
+  contenedor.innerHTML = ""; // limpiar anterior
+  respuestaContainer.innerHTML = `
+    <div>Felicitaciones por pasar el nivel, ¿quieres jugar de vuelta o volver al menú?</div>
+    <button onclick="play_again()">Jugar de nuevo</button>
+    <button onclick="back()">Volver al menú</button>
+  `;
+
+  modal.show();
+}
+
+function verificar_atendidos() {
+  const pacientesAtendidos = entities.some(e => e.type === "bed" && e.patient && e.patientStatus === "sick");
+  console.log("Pacientes atendidos:", !pacientesAtendidos);
+  if (!pacientesAtendidos) {
+    setTimeout(() => {
+      mostrarModalfinal("¡Lograste pasar el nivel!");
+      // No cerramos el modal aquí, así que permanece abierto
+    }, 3000);
+  }
+}
