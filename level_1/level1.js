@@ -75,10 +75,10 @@ window.addEventListener("keydown", (e) => {
   // Cambiar imagen del doctor según dirección
   if (!drawDoctor.images) drawDoctor.images = {};
   const directionMap = {
-    "frente": "../assets/entities/doctor/doctor_frente.png",
-    "espalda": "../assets/entities/doctor/doctor_espalda.png",
-    "izquierda": "../assets/entities/doctor/doctor_izquierda.png",
-    "derecha": "../assets/entities/doctor/doctor_derecha.png"
+    "frente": "../assets/entities/doctor/negra.png",
+    "espalda": "../assets/entities/doctor/negraespalda.png",
+    "izquierda": "../assets/entities/doctor/izquierda.png",
+    "derecha": "../assets/entities/doctor/derecha.png"
   };
   if (directionMap[direction]) {
     if (!drawDoctor.images[direction]) {
@@ -125,6 +125,113 @@ function back(){
     }
   }, { once: true });
 }
+//Funcion de pausa 
+function pausa() {
+  // Detener entrada y temporizador
+  entradaHabilitada = false;
+  if (intervalo) clearInterval(intervalo);
+
+  // Guardar referencia a la función original si no existe
+  if (!pausa._originalActualizarTemporizador) {
+    pausa._originalActualizarTemporizador = actualizarTemporizador;
+  }
+  // Congelar el temporizador completamente
+  actualizarTemporizador = function() {};
+
+  // Crear overlay de pausa si no existe
+  let overlay = document.getElementById('pausaOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'pausaOverlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = 0;
+    overlay.style.left = 0;
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.background = 'rgba(0,0,0,0.85)';
+    overlay.style.zIndex = 1000;
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `
+  <div style="
+    background: #111;
+    border: 3px solid #00ffff;
+    box-shadow: 0 0 20px #00ffff, 0 0 10px #00ffff inset;
+    padding: 32px 40px;
+    border-radius: 16px;
+    text-align: center;
+    min-width: 320px;
+    max-width: 90vw;
+  ">
+    <span style="
+    display: inline-block;
+    background: #000;
+    border: 3px solid #00ffff;
+    box-shadow: 0 0 10px #00ffff, 0 0 5px #00ffff inset;
+    padding: 20px 30px;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px #00ffff, 0 0 2px #00ffff;
+    color: #00ffff;
+    ">
+    <span style="font-size:1.3em;">⏸️ JUEGO EN PAUSA ⏸️</span><br>
+    </span>
+    <div style="margin-top:18px;">
+    <button id="btnReanudar" class="btn">Empezar</button>
+    </div>
+  </div>
+  `;
+  overlay.style.display = 'flex';
+
+  // Botón para reanudar
+  const btnReanudar = document.getElementById('btnReanudar');
+  btnReanudar.style.background = '#00ffff';
+  btnReanudar.style.color = '#000';
+  btnReanudar.style.border = '2px solid #00ffff';
+  btnReanudar.style.fontFamily = "'Press Start 2P', cursive";
+  btnReanudar.style.boxShadow = '0 0 5px #00ffff';
+  btnReanudar.onmouseover = function() {
+    btnReanudar.style.background = '#000';
+    btnReanudar.style.color = '#00ffff';
+  };
+  btnReanudar.onmouseout = function() {
+    btnReanudar.style.background = '#00ffff';
+    btnReanudar.style.color = '#000';
+  };
+
+  btnReanudar.onclick = function () {
+    overlay.style.opacity = 0;
+    setTimeout(() => {
+      overlay.remove();
+      entradaHabilitada = true;
+      // Restaurar la función original del temporizador si existe
+      if (pausa._originalActualizarTemporizador) {
+        actualizarTemporizador = pausa._originalActualizarTemporizador;
+      }
+      // Reanudar temporizador solo si el juego no terminó
+      if (!juegoTerminadoPorTiempo && typeof actualizarTemporizador === "function") {
+        intervalo = setInterval(actualizarTemporizador, 1000);
+      }
+    }, 1000);
+  };
+}
+
+/* Permitir pausar con la tecla "p" o "P" y reanudar con "p" o "P" si está en pausa
+window.addEventListener("keydown", (e) => {
+  const overlay = document.getElementById('pausaOverlay');
+  if ((e.key === "p" || e.key === "P")) {
+    if (entradaHabilitada && !overlay) {
+      pausa();
+    } else if (!entradaHabilitada && overlay) {
+      // Simula click en el botón de reanudar si está en pausa
+      const btn = document.getElementById('btnReanudar');
+      if (btn) btn.click();
+    }
+  }
+});*/
 
 function IniciarNivel(level) {
   // Simulación de sonido retro y efecto de animación
@@ -156,14 +263,14 @@ function IniciarNivel(level) {
 // Posiciones directas de las camas 
   const bedPositions = [
     { x: 3, y: 1 },
-    { x: 7, y: 1 },
+  /*  { x: 7, y: 1 },
     { x: 11, y: 1 },
-   /* { x: 15, y: 1},
+    { x: 15, y: 1},
     //camas bajas
     { x: 3, y: 8 },
     { x: 7, y: 8 },
-    { x: 11, y: 8 },
-    { x: 15, y: 8 }*/
+    { x: 11, y: 8 },*/
+    { x: 15, y: 8 }
   ]
   const machinePositions = [
     { x: 4, y: 1 },
@@ -216,6 +323,7 @@ function getRandomPositions(count, cols, rows, occupied) {
     return { x, y };
   });
 }
+
 function drawScene(ctx) {
   const tileSize = 33; // tamaño de tile cuadrado para vista top-down
   const cols = 17;
@@ -334,10 +442,25 @@ function drawPixelPatient(ctx, x, y, status = "sick") {
   const tileSize = 25;
   const patientWidth = tileSize * 1.5;
   const patientHeight = tileSize * 2.2;
+  // Determinar el sprite según el estado y el género (aleatorio para cada paciente)
+  let spritePath;
+  // Si el paciente ya tiene asignado un género, úsalo; si no, asígnalo aleatoriamente
+  if (!drawPixelPatient._genderMap) drawPixelPatient._genderMap = {};
+  // Usar x,y como clave única para el paciente
+  const patientKey = `${x},${y}`;
+  if (!drawPixelPatient._genderMap[patientKey]) {
+    drawPixelPatient._genderMap[patientKey] = Math.random() < 0.5 ? "masculino" : "femenina";
+  }
+  const genero = drawPixelPatient._genderMap[patientKey];
 
-  let spritePath = "../assets/entities/patient.png";
-  if (status === "treated") {
-    spritePath = "../assets/entities/patient_treated.png";
+  if (genero === "femenina") {
+    spritePath = status === "treated"
+      ? "../assets/entities/femenina_trated.png"
+      : "../assets/entities/patient_femenina.png";
+  } else {
+    spritePath = status === "treated"
+      ? "../assets/entities/patient_treated.png"
+      : "../assets/entities/patient.png";
   }
 
   if (!drawPixelPatient.images) drawPixelPatient.images = {};
@@ -367,12 +490,81 @@ function drawDoctor(ctx, x, y) {
 
   if (!drawDoctor.image) {
     drawDoctor.image = new Image();
-    drawDoctor.image.src = "../assets/entities/doctor/doctor_frente.png";
+    drawDoctor.image.src = "../assets/entities/doctor/negra.png";
     drawDoctor.image.loaded = false;
     drawDoctor.image.onload = () => {
       drawDoctor.image.loaded = true;
       drawScene(ctx);
     };
+  }
+
+  // Mostrar nube de diálogo al iniciar el juego con información sobre urgencias médicas
+  if (typeof drawDoctor.dialogShown === "undefined") {
+    entradaHabilitada = false;
+    drawDoctor.dialogShown = true;
+    // Ocultar el temporizador visualmente
+    if (timerElement) timerElement.style.display = "none";
+
+    // Detener el temporizador si está corriendo
+    if (typeof intervalo !== "undefined") clearInterval(intervalo);
+
+    setTimeout(() => {
+      const canvas = ctx.canvas;
+      const dialog = document.createElement("div");
+      dialog.id = "doctor-initial-dialog";
+      dialog.style.position = "absolute";
+      dialog.style.left = (canvas.offsetLeft + x + 60) + "px";
+      dialog.style.top = (canvas.offsetTop + y - 10) + "px";
+      dialog.style.background = "rgba(10, 20, 40, 0.98)";
+      dialog.style.border = "2px solid #00ffff";
+      dialog.style.borderRadius = "12px";
+      dialog.style.padding = "10px 16px";
+      dialog.style.fontFamily = "'Press Start 2P', Consolas, 'Courier New', monospace";
+      dialog.style.fontSize = "0.75em";
+      dialog.style.zIndex = 1000;
+      dialog.style.maxWidth = "220px";
+      dialog.style.color = "#fff";
+      dialog.style.textShadow = "none";
+      dialog.style.letterSpacing = "0.5px";
+      dialog.innerHTML = `
+      <span style="font-size:1em; color:#00ffff; font-weight:bold; display:block; margin-bottom:4px;">
+        &#128657; Urgencias &#128657;
+      </span>
+      <span style="color:#fff;">
+        <b>¿Sabías?</b> El área de <b style="color:#00ffff;">urgencias</b> es donde se atienden los casos más graves y que requieren atención inmediata.<br>
+        <span style="color:#00ffea;">¡Actúa rápido y mantén la calma!</span>
+      </span>
+      <br>
+      <button id="doctor-initial-ok" style="
+        margin-top:8px;
+        background:#00ffff;
+        color:#000;
+        border:1px solid #00ffff;
+        border-radius:6px;
+        font-family:'Press Start 2P', Consolas, 'Courier New', monospace;
+        font-size:0.85em;
+        padding:3px 10px;
+        box-shadow:none;
+        cursor:pointer;
+      ">OK</button>
+      `;
+      document.body.appendChild(dialog);
+      // Función para cerrar el diálogo y reanudar el temporizador
+      function cerrarDialogo() {
+        if (dialog.parentNode) dialog.parentNode.removeChild(dialog);
+        entradaHabilitada = true;
+        // Mostrar el temporizador nuevamente
+        if (timerElement) timerElement.style.display = "";
+        // Reanudar el temporizador solo si no está corriendo
+        if (typeof intervalo !== "undefined") clearInterval(intervalo);
+        intervalo = setInterval(actualizarTemporizador, 1000);
+      }
+
+      // Botón OK para cerrar y habilitar movimiento
+      const okBtn = dialog.querySelector("#doctor-initial-ok");
+      okBtn.onclick = cerrarDialogo;
+
+    }, 800); // Mostrar poco después de iniciar
   }
 
   if (drawDoctor.image.loaded) {
@@ -411,36 +603,40 @@ function drawPixelMachine(ctx, x, y, machineType) {
   }
 }
 
-//Mensaje de atender al paciente 
+// Mensaje de atender al paciente (al lado del doctor)
 function mensaje_de_atencion() {
-  const tileSize = 33;
-  const canvas = document.getElementById("game-canvas");
   const dialogo = document.getElementById("dialogo-contextual");
-
+  let mensajeMostrado = false;
   for (const entity of entities) {
     if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
       const dx = Math.abs(doctor.x - entity.x);
       const dy = Math.abs(doctor.y - entity.y);
-      if (dx + dy === 1) {
-        // Mostrar mensaje
-        const x = entity.x * tileSize + 50;
-        const y = entity.y * tileSize + 30;
-
-        dialogo.style.left = `${x}px`;
-        dialogo.style.top = `${y}px`;
+      // Mostrar mensaje si el doctor está al lado de la cama
+      if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+        const canvas = document.getElementById("game-canvas");
+        const tileSize = 33;
+        const offsetX = canvas.offsetLeft + doctor.x * tileSize + 30;
+        const offsetY = canvas.offsetTop + doctor.y * tileSize + 10;
+        dialogo.style.position = "absolute";
+        dialogo.style.left = (offsetX + tileSize + 10) + "px";
+        dialogo.style.top = (offsetY - tileSize / 2) + "px";
+        dialogo.style.transform = "none";
         dialogo.innerText = "Presiona [E] para atender";
         dialogo.style.display = "block";
         dialogo.style.fontFamily = "Consolas, 'Courier New', monospace";
-        return;
+        mensajeMostrado = true;
+        break;
       }
     }
   }
-
-  dialogo.style.display = "none";
+  if (!mensajeMostrado) {
+    dialogo.style.display = "none";
+  }
 }
 
 function intentarAtenderPaciente() {
   for (const entity of entities) {
+    entradaHabilitada = false; // Desactivar entrada mientras se atiende
     if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
       const dx = Math.abs(doctor.x - entity.x);
       const dy = Math.abs(doctor.y - entity.y);
@@ -551,30 +747,43 @@ function Responder() {
     alert("Ocurrió un error al enviar la respuesta.");
   }
 }
- //Temporizador estilo juego retro
+//Temporizador estilo juego retro
 
-    let tiempoRestante = 120 ; // 200 segundos (3 minutos y 20 segundos)
-    const timerElement = document.getElementById('timerElement');
+let tiempoRestante = 22; // 200 segundos (3 minutos y 20 segundos)
+const timerElement = document.getElementById('timerElement');
+let intervalo = null;
 
-    function actualizarTemporizador() {
-      const minutos = Math.floor(tiempoRestante / 60);
-      const segundos = tiempoRestante % 60;
-      timerElement.textContent =
-        `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+function actualizarTemporizador() {
+  const minutos = Math.floor(tiempoRestante / 60);
+  const segundos = tiempoRestante % 60;
+  timerElement.textContent =
+    `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
 
-      if (tiempoRestante > 0) {
-        tiempoRestante--;
-      } else {
-        clearInterval(intervalo);
-        mostrarModalTiempoAgotado();
-      }
-    }
-    const intervalo = setInterval(actualizarTemporizador, 1000);
+  if (tiempoRestante > 0) {
+    tiempoRestante--;
+  } else {
+    clearInterval(intervalo);
+    mostrarModalTiempoAgotado();
+  }
+}
+function stopTimer() {
+  if (intervalo) {
+    clearInterval(intervalo);
+    intervalo = null;
+  }
+  // Además, evita que el temporizador vuelva a ejecutarse
+  actualizarTemporizador = function() {};
+}
 
     // Modal "Tiempo Agotado"
     function mostrarModalTiempoAgotado() {
+      entradaHabilitada = false; // Desactivar entrada mientras se muestra el modal
       contenedor.innerHTML = ""; // limpiar anterior
-
+      // Deshabilitar el temporizador visualmente y lógicamente
+      if (timerElement) timerElement.style.display = "none";
+      if (typeof intervalo !== "undefined") clearInterval(intervalo);
+      // Desactivar la función de timer completamente
+      actualizarTemporizador = function() {};
       // Ocultar cualquier modal de Bootstrap abierto
       if (typeof modal !== "undefined" && modal.hide) {
         modal.hide();
@@ -629,17 +838,17 @@ function Responder() {
         <span style="font-size:1em;">¡NDE TAVY!</span><br>
         </span>
         <div style="margin-top:18px;">
-        <button id="btnReintentarTiempo" class="btn" style="margin-right:10px;">Reintentar</button>
-        <button id="btnIrInicioTiempo" class="btn">Ir al inicio</button>
+        <button id="btnReintentar" class="btn" style="margin-right:10px;">Reintentar</button>
+        <button id="btnIrInicio" class="btn">Ir al inicio</button>
         </div>
       </div>
       `;
       overlay.style.display = 'flex';
-      entradaHabilitada = false;
+    
 
       // Botones
-      const btnReintentar = document.getElementById('btnReintentarTiempo');
-      const btnIrInicio = document.getElementById('btnIrInicioTiempo');
+      const btnReintentar = document.getElementById('btnReintentar');
+      const btnIrInicio = document.getElementById('btnIrInicio');
 
       [btnReintentar, btnIrInicio].forEach(btn => {
       btn.style.background = '#00ffff';
@@ -678,22 +887,33 @@ function Responder() {
     }
 
 
+    // Función para detener el temporizador y evitar que vuelva a ejecutarse
+    function stopTimer() {
+      if (intervalo) {
+        clearInterval(intervalo);
+        intervalo = null;
+      }
+      // Además, evita que el temporizador vuelva a ejecutarse
+      actualizarTemporizador = function() {};
+    }
+
     // Función para verificar si todos los pacientes han sido atendidos
     function verificarFinDeJuego() {
-      const quedanPacientes = entities.some(
+      const noquedanPacientes = entities.some(
         e => e.type === "bed" && e.patient && e.patientStatus === "sick"
       );
-      if (!quedanPacientes) {
-         clearInterval(intervalo);
+      if (!noquedanPacientes) {
+        stopTimer();
         mostrarModalFinDeJuego();
-        
       }
     }
- 
+
     /* Modal de juego completado (nivel terminado).*/
 
     function mostrarModalFinDeJuego() {
-      // Crear overlay si no existe
+      entradaHabilitada = false; // Desactivar controles del jugador
+
+      // Crear overlay si no existe 
       let overlay = document.getElementById('modalFinJuegoOverlay');
       if (!overlay) {
         overlay = document.createElement('div');
@@ -741,8 +961,7 @@ function Responder() {
         </div>
       `;
       overlay.style.display = 'flex';
-      entradaHabilitada = false;
-
+      
       const btnIrInicioFin = document.getElementById('btnIrInicioFin');
       btnIrInicioFin.style.background = '#00ff00';
       btnIrInicioFin.style.color = '#000';
@@ -804,6 +1023,7 @@ function Responder() {
         alert("Ocurrió un error al enviar la respuesta.");
       }
     };
+    
     //minijuego
     // aparece antes de responder la pregunta, y tras completarlo se puede responder
 
@@ -814,39 +1034,39 @@ function Responder() {
       minijuegoEnCurso = true;
       let overlay = document.getElementById('minijuegoOverlay');
       if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'minijuegoOverlay';
-      overlay.style.position = 'fixed';
-      overlay.style.top = 0;
-      overlay.style.left = 0;
-      overlay.style.width = '100vw';
-      overlay.style.height = '100vh';
-      overlay.style.background = 'rgba(0,0,0,0.95)';
-      overlay.style.zIndex = 10001;
-      overlay.style.display = 'flex';
-      overlay.style.alignItems = 'center';
-      overlay.style.justifyContent = 'center';
-      document.body.appendChild(overlay);
+        overlay = document.createElement('div');
+        overlay.id = 'minijuegoOverlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = 0;
+        overlay.style.left = 0;
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.background = 'rgba(0,0,0,0.95)';
+        overlay.style.zIndex = 10001;
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        document.body.appendChild(overlay);
       }
       overlay.innerHTML = `
-      <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
-        <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
-        <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
-        <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
-      </div>
+        <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
+          <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
+          <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
+          <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
+        </div>
       `;
       overlay.style.display = 'flex';
       entradaHabilitada = false;
 
       minijuego(function(resultado) {
-      minijuegoEnCurso = false;
-      // Si el modal de tiempo agotado está activo, superponerlo y quitar el minijuego
-      if (juegoTerminadoPorTiempo) {
-        if (overlay) overlay.remove();
-        return;
-      }
-      overlay.remove();
-      if (typeof callback === "function") callback(resultado);
+        minijuegoEnCurso = false;
+        // Si el modal de tiempo agotado está activo, superponerlo y quitar el minijuego
+        if (juegoTerminadoPorTiempo) {
+          if (overlay) overlay.remove();
+          return;
+        }
+        overlay.remove();
+        if (typeof callback === "function") callback(resultado);
       });
     }
 
@@ -884,9 +1104,9 @@ function Responder() {
       }
 
       function cleanup() {
-      document.removeEventListener("keydown", keyDownHandler, false);
-      document.removeEventListener("keyup", keyUpHandler, false);
-      document.removeEventListener("mousemove", mouseMoveHandler, false);
+        document.removeEventListener("keydown", keyDownHandler, false);
+        document.removeEventListener("keyup", keyUpHandler, false);
+        document.removeEventListener("mousemove", mouseMoveHandler, false);
       }
 
       document.addEventListener("keydown", keyDownHandler, false);
@@ -928,7 +1148,7 @@ function Responder() {
                   finished = true;
                   cleanup();
                   setTimeout(() => {
-                  if (typeof onFinish === "function") onFinish("win");
+                    if (typeof onFinish === "function") onFinish("win");
                   }, 500);
                 }
               }
@@ -1005,12 +1225,12 @@ function Responder() {
               finished = true;
               cleanup();
               setTimeout(() => {
-              // Si el juego ya terminó por tiempo, no mostrar nada más
-              if (juegoTerminadoPorTiempo) return;
-              // Si pierdes las 3 vidas, mostrar el modal de tiempo agotado y superponerlo
-              juegoTerminadoPorTiempo = true;
-              mostrarModalTiempoAgotado(true); // true para indicar que debe superponerse
-              if (typeof onFinish === "function") onFinish("lose");
+                // Si el juego ya terminó por tiempo, no mostrar nada más
+                if (juegoTerminadoPorTiempo) return;
+                // Si pierdes las 3 vidas, mostrar el modal de tiempo agotado y superponerlo
+                juegoTerminadoPorTiempo = true;
+                mostrarModalTiempoAgotado(true); // true para indicar que debe superponerse
+                if (typeof onFinish === "function") onFinish("lose");
               }, 500);
             }
             else {
@@ -1044,19 +1264,29 @@ function Responder() {
       // Si el juego terminó por tiempo, no mostrar nada
       if (juegoTerminadoPorTiempo) return;
       entradaHabilitada = false;
-      // Lanzar minijuego primero
-      mostrarMinijuegoAntesDePregunta((resultado) => {
-      // Si el juego terminó por tiempo durante el minijuego, no mostrar la pregunta
-      if (juegoTerminadoPorTiempo) return;
-      // Si perdió el minijuego, no mostrar la pregunta
-      if (resultado === "lose") return;
-      // Cuando termine el minijuego y gane, mostrar la pregunta
-      document.getElementById('modalMensaje').innerText = mensaje;
-      const preguntaID = Math.floor(Math.random() * 5) + 1;
-      mostrarPregunta(preguntaID);
-      modal.show();
-      entradaHabilitada = true;
-      });
+      // 50% de probabilidad de mostrar el minijuego
+      if (Math.random() < 0.5) {
+        // Lanzar minijuego primero
+        mostrarMinijuegoAntesDePregunta((resultado) => {
+          // Si el juego terminó por tiempo durante el minijuego, no mostrar la pregunta
+          if (juegoTerminadoPorTiempo) return;
+          // Si perdió el minijuego, no mostrar la pregunta
+          if (resultado === "lose") return;
+          // Cuando termine el minijuego y gane, mostrar la pregunta
+          document.getElementById('modalMensaje').innerText = mensaje;
+          const preguntaID = Math.floor(Math.random() * 5) + 1;
+          mostrarPregunta(preguntaID);
+          modal.show();
+          entradaHabilitada = true;
+        });
+      } else {
+        // No mostrar minijuego, mostrar la pregunta directamente
+        document.getElementById('modalMensaje').innerText = mensaje;
+        const preguntaID = Math.floor(Math.random() * 5) + 1;
+        mostrarPregunta(preguntaID);
+        modal.show();
+        entradaHabilitada = true;
+      }
     };
 
     // Sobrescribe mostrarModalTiempoAgotado para marcar el juego como terminado
