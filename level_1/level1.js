@@ -180,7 +180,8 @@ function pausa() {
     <span style="font-size:1.3em;">⏸️ JUEGO EN PAUSA ⏸️</span><br>
     </span>
     <div style="margin-top:18px;">
-    <button id="btnReanudar" class="btn">Empezar</button>
+    <button id="btnReanudar" class="btn-return">Empezar</button>
+    <button id="btnReanudar" onclick="back()" class="btn-exit">Salir</button>
     </div>
   </div>
   `;
@@ -188,19 +189,6 @@ function pausa() {
 
   // Botón para reanudar
   const btnReanudar = document.getElementById('btnReanudar');
-  btnReanudar.style.background = '#00ffff';
-  btnReanudar.style.color = '#000';
-  btnReanudar.style.border = '2px solid #00ffff';
-  btnReanudar.style.fontFamily = "'Press Start 2P', cursive";
-  btnReanudar.style.boxShadow = '0 0 5px #00ffff';
-  btnReanudar.onmouseover = function() {
-    btnReanudar.style.background = '#000';
-    btnReanudar.style.color = '#00ffff';
-  };
-  btnReanudar.onmouseout = function() {
-    btnReanudar.style.background = '#00ffff';
-    btnReanudar.style.color = '#000';
-  };
 
   btnReanudar.onclick = function () {
     overlay.style.opacity = 0;

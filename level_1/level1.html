@@ -23,6 +23,19 @@
       width: 100vw;
     }
 
+    /* Responsive background for smaller screens */
+    @media (max-width: 900px) {
+      body {
+        background-size: cover;
+        background-position: center top;
+      }
+    }
+    @media (max-width: 600px) {
+      body {
+        background-size: 100% 100vh;
+        background-position: center top;
+      }
+    }
     /* Temporizador estilo reloj retro */
     #timerElement {
       font-size: 1.5rem;
@@ -54,11 +67,11 @@
     }
 
     .subtitled {
-       font-size: 24px;
-        color: #ffffff;
-        margin-bottom: 40px;
+      font-size: 24px;
+      color: #ffffff;
+      margin-bottom: 40px;
         /* Sombras múltiples para efecto 3D amarillo */
-    text-shadow:
+      text-shadow:
       0 1px 0 #cac707,    /* Sombra amarilla clara */
       0 2px 0 #8a7502,    /* Sombra amarilla oscura */
       1px 1px 6px #000;   /* Sombra negra difusa */
@@ -66,30 +79,9 @@
       text-align: center;
       margin: 0;
     }
-    .button_backd {
-      position: absolute;
-      left: 180px;
-      top: 50px;
-      background: linear-gradient(90deg, #7c3aed 0%, #00b4d8 100%);
-      color: #fff;
-      border: 3px solid #fff;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 12px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      padding: 18px 36px;
-      border-radius: 10px;
-      box-shadow: 0 4px #3a0ca3, 0 8px 16px #0008;
-      text-shadow: 1px 1px 2px #000, 0 0 8px #fff;
-      overflow: hidden;
-      cursor: pointer;
-      margin: 10px 0 10px 0;
-      transition: transform 0.1s, box-shadow 0.1s;
-      align-self: flex-start;
-    }
-
+    
     .button_stop {
-        position: absolute;
+      position: absolute;
       left: 180px;
       top: 200px;
       background: linear-gradient(90deg, #7c3aed 0%, #00b4d8 100%);
@@ -130,19 +122,39 @@
       background-color: #00ffff;
       color: #000;
     }
-   /* Responsive background for smaller screens */
-    @media (max-width: 900px) {
-      body {
-        background-size: cover;
-        background-position: center top;
-      }
+
+    .btn-exit {
+      background: #ff5100;
+      color: #000;
+      border: 2px solid #ff5100;
+      font-family: 'Press Start 2P', cursive;
+      box-shadow: 0 0 5px #ff5100;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
     }
-    @media (max-width: 600px) {
-      body {
-        background-size: 100% 100vh;
-        background-position: center top;
-      }
+
+    .btn-exit:hover {
+      background: #000;
+      color: #ff5100;
     }
+
+    .btn-return {
+      background: #00ffff;
+      color: #000;
+      border: 2px solid #00ffff;
+      font-family: 'Press Start 2P', cursive;
+      box-shadow: 0 0 5px #00ffff;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+    }
+
+    .btn-return:hover {
+      background: #000;
+      color: #00ffff;
+    }
+
+
+
   </style>
   
 </head>
@@ -152,12 +164,11 @@
   <div class="modal_juego">
     <div id="dialogo-contextual" style="display:none;"></div>
   </div>
-
-  <!-- Barra superior -->
-  <div class="header-bar">
-    <button class="button_backd" onclick="back()">Exit</button>
-    <button class="button_stop" onclick="pausa()">Pausar</button>
-    <h1 class="subtitled">Sala de Urgencias Médicas</h1>
+  <br>
+  <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <h1 class="subtitle" style="margin: 0 auto; flex: 1; text-align: center;">Sala de Urgencias Médicas</h1>
+    <button class="button_back" onclick="pausa()" style="position: absolute; left: 20px; top: 20px;">Pausar</button>
+    <!--<button class="button_stop" onclick="pausa()">Pausar</button>-->
   </div>
   <!-- Temporizador -->
   <div id="timerElement" style="position: absolute; top: 20px; right: 30px; font-size: 1.4rem; padding: 15px 35px;"></div>
