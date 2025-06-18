@@ -1,5 +1,12 @@
 let entities = [];
 let doctor = [];
+const modal = new bootstrap.Modal(document.getElementById('modalGlobal'));
+const contenedor = document.getElementById('pregunta-container');
+const respuestaContainer = document.getElementById('respuesta-container');
+
+let entradaHabilitada = true;
+let respuestaCorrecta = "";
+
 window.addEventListener("load", () => {
   const cortina = document.getElementById("cortina");
   cortina.style.background = "black";
@@ -15,7 +22,11 @@ window.addEventListener("load", () => {
 
 //movilidad del doctor 
 window.addEventListener("keydown", (e) => {
+  if (!entradaHabilitada) {
+    return; // Desactiva teclas si está bloqueado
+  }
   const prev = { x: doctor.x, y: doctor.y };
+  
   let direction = "frente";
 
   switch (e.key) {
@@ -40,6 +51,23 @@ window.addEventListener("keydown", (e) => {
       intentarAtenderPaciente();
       break
   }
+
+  const destinoX = doctor.x;
+  const destinoY = doctor.y;
+
+  // Evitar caminar sobre camas
+  const hayCamaEnDestino = entities.some(e => 
+    e.type === "bed" &&
+    Math.abs(destinoX - e.x) < 1 &&
+    Math.abs(destinoY - e.y) < 1.1
+  );
+
+  if (hayCamaEnDestino) {
+    doctor.x = prev.x;
+    doctor.y = prev.y;
+    return;
+  }
+
   // Limitar a límites del mapa
   doctor.x = Math.max(0, Math.min(15.5, doctor.x));
   doctor.y = Math.max(0, Math.min(10.5, doctor.y));
@@ -98,6 +126,32 @@ function back(){
   }, { once: true });
 }
 
+function play_again(){
+  const button = event.target;
+  button.style.animation = 'none';
+  button.offsetHeight; // trigger reflow
+  button.style.animation = 'blink 0.5s ease-in-out 3'; 
+
+  // Esperar a que termine la animación antes de iniciar el juego
+  button.addEventListener('animationend', function handler() {
+    button.removeEventListener('animationend', handler);
+    const overlay = document.querySelector('.transition-overlay');
+
+    // Activar la animación de la cortina
+    if (overlay) {
+      overlay.classList.add('active');
+      // Esperar la animación antes de redirigir
+      setTimeout(() => {
+        window.location.reload(); // Recargar la página para reiniciar el juego
+      }, 800); // Tiempo sincronizado con la duración de la animación
+    } else {
+      // Si no hay overlay, redirigir inmediatamente
+        window.location.reload(); // Recargar la página para reiniciar el juego
+    }
+  }, { once: true });
+}
+
+
 function IniciarNivel(level) {
   // Simulación de sonido retro y efecto de animación
   console.log("Iniciando el Nivel", level);
@@ -126,10 +180,18 @@ function IniciarNivel(level) {
   const occupiedPositions = new Set();
   occupiedPositions.add(`${doctor.x},${doctor.y}`);
 
-  // Obtener posiciones aleatorias para camas y máquinas
-  const bedPositions = getRandomPositions(numBeds, cols, rows, occupiedPositions);
-  const machinePositions = getRandomPositions(numMachines, cols, rows, occupiedPositions);
-
+  // Posiciones directas de las camas 
+  const bedPositions = [
+    { x: 4, y: 6 },
+    { x: 7, y: 3 },
+    { x: 10, y: 6 },
+  ]
+  const machinePositions = [
+    { x: 5, y: 6 },
+    { x: 8, y: 3 },
+    { x: 11, y: 6 },
+  ]
+  
   const beds = bedPositions.map((pos) => ({
     type: "bed",
     x: pos.x,
@@ -148,6 +210,7 @@ function IniciarNivel(level) {
     }))
   ];
   drawScene(ctx);
+  
 }
 
 //funcionalidad para obtener valores ramdons 
@@ -167,8 +230,6 @@ function getRandomPositions(count, cols, rows, occupied) {
     return { x, y };
   });
 }
-
-
 
 function drawScene(ctx) {
   const tileSize = 33; // tamaño de tile cuadrado para vista top-down
@@ -268,7 +329,7 @@ function drawPixelFloorTile(ctx, x, y, size) {
 
 function drawPixelBed(ctx, x, y) {
   const tileSize = 25;
-  const bedWidth = tileSize * 2;
+  const bedWidth = tileSize * 2.2;
   const bedHeight = tileSize * 3;
   if (!drawPixelBed.bedImage) {
     drawPixelBed.bedImage = new Image();
@@ -334,6 +395,37 @@ function drawDoctor(ctx, x, y) {
   }
 }
 
+function drawPixelMachine(ctx, x, y, machineType) {
+  let imgSrc, width, height;
+  if (machineType === "xray") {
+    imgSrc = "../assets/entities/machine_xray.png";
+    width = 28;
+    height = 28;
+  } else if (machineType === "monitor") {
+    imgSrc = "../assets/entities/machine_monitor.png";
+    width = 24;
+    height = 32;
+  } else {
+    return;
+  }
+
+  if (!drawPixelMachine.images) drawPixelMachine.images = {};
+  if (!drawPixelMachine.images[machineType]) {
+    const img = new Image();
+    img.src = imgSrc;
+    img.loaded = false;
+    img.onload = () => {
+      img.loaded = true;
+      drawScene(ctx);
+    };
+    drawPixelMachine.images[machineType] = img;
+  }
+  const img = drawPixelMachine.images[machineType];
+  if (img.loaded) {
+    ctx.drawImage(img, x, y, width, height);
+  }
+}
+
 //Mensaje de atender al paciente 
 function mensaje_de_atencion() {
   const tileSize = 33;
@@ -368,77 +460,138 @@ function intentarAtenderPaciente() {
       const dx = Math.abs(doctor.x - entity.x);
       const dy = Math.abs(doctor.y - entity.y);
       if (dx + dy === 1) {
-        iniciarMiniJuego(entity);
+        mostrarModal("JUEGO DE PREGUNTAS");
       }
     }
   }
 }
 
-//Mini Juego 
+function mostrarModal(mensaje) {
+  entradaHabilitada = false; // Desactivar entrada mientras se atiende
+  document.getElementById('modalMensaje').innerText = mensaje;
+  const preguntaID = Math.floor(Math.random() * 5) + 1;
+  mostrarPregunta(preguntaID);
 
-function iniciarMiniJuego(paciente) {
-  const modal = document.getElementById("minijuego-modal");
-  const jeringa = document.getElementById("jeringa");
-  const boton = document.getElementById("boton-aplicar");
+  modal.show();
+}
 
-  let altura = 0;
-  let intervalo = null;
+function habilitar_Movimiento(){
+  const contenedor = document.getElementById('respuesta-container');
+  contenedor.innerHTML = ""; // Limpiar respuesta anterior
+  entradaHabilitada = true; // Reactivar entrada
+}
 
-  modal.style.display = "flex";
-  jeringa.style.height = "0%";
+function mostrarPregunta(numero) {
+  contenedor.innerHTML = ""; // limpiar anterior
+  let pregunta = "";
+  let opciones = [];
+  switch (numero) {
+    case 1:
+      pregunta = "¿Cuál es la temperatura normal del cuerpo humano?";
+      opciones = ["38-39°C", "36-37°C", "34-35°C"];
+      respuestaCorrecta = "36-37°C";
+      break;
+    case 2:
+      pregunta = "¿Cuál es el órgano principal del sistema circulatorio?";
+      opciones = ["Pulmón", "Corazón", "Riñón"];
+      respuestaCorrecta = "Corazón";
+      break;
+    case 3:
+      pregunta = "¿Qué significa 'ICU'?";
+      opciones = ["Unidad Clínica Única", "Unidad de Cuidados Intensivos", "Inyección Cardiaca Urgente"];
+      respuestaCorrecta = "Unidad de Cuidados Intensivos";
+      break;
+    case 4:
+      pregunta = "¿Cuál es el antiséptico más usado?";
+      opciones = ["Azúcar", "Alcohol", "Aceite"];
+      respuestaCorrecta = "Alcohol";
+      break;
+    case 5:
+      pregunta = "¿Qué vitamina se obtiene principalmente del sol?";
+      opciones = ["Vitamina D", "Vitamina C", "Vitamina A"];
+      respuestaCorrecta = "Vitamina D";
+      break;
+    case 6:
+      pregunta = "¿Cuál es el órgano encargado de filtrar la sangre?";
+      opciones = ["Riñón", "Hígado", "Corazón"];
+      respuestaCorrecta = "Riñón";
+      break;
+  }
 
-  boton.onmousedown = () => {
-    intervalo = setInterval(() => {
-      altura += 2;
-      if (altura >= 100) {
-        altura = 100;
-        completarMiniJuego(paciente);
+  const htmlOpciones = opciones.map((op, i) => `
+      <label style="display:inline-flex;align-items:center;margin-right:12px;">
+        <input class="opciones_pregunta" type="radio" name="respuesta" value="${op}" id="opcion${i}" style="margin-right:4px; margin-top:4px;">
+        ${op}
+      </label>
+  `).join("");
+
+  contenedor.innerHTML = `
+    <p><strong>${pregunta}</strong></p>
+    ${htmlOpciones}
+    <br>
+    <button onclick="Responder()">Enviar</button>
+  `;
+}
+
+function Responder() {
+  try {
+    const respuestaUsuario = document.querySelector('input[name="respuesta"]:checked')?.value;
+    if (respuestaUsuario == undefined) {
+      respuestaContainer.innerHTML = '<span style="color:orange;font-weight:bold;">Por favor selecciona una respuesta</span>';
+      return
+    }
+    if (respuestaUsuario === respuestaCorrecta) {
+      respuestaContainer.innerHTML = '<span style="color:green;font-weight:bold;">¡Respuesta correcta!</span>';
+      contenedor.innerHTML = ""; // limpiar anterior
+      for (const entity of entities) {
+        if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
+          const dx = Math.abs(doctor.x - entity.x);
+          const dy = Math.abs(doctor.y - entity.y);
+          if (dx + dy === 1) {
+            entity.patientStatus = "treated";
+            break;
+          }
+        }
       }
-      jeringa.style.height = `${altura}%`;
-    }, 100);
-  };
-
-  boton.onmouseup = boton.onmouseleave = () => {
-    clearInterval(intervalo);
-  };
+      drawScene(document.getElementById("game-canvas").getContext("2d"));
+      verificar_atendidos();
+      setTimeout(() =>{
+        habilitar_Movimiento();
+        modal.hide()
+      },2500);
+    } else {
+      respuestaContainer.innerHTML = '<span style="color:red;font-weight:bold;">Respuesta incorrecta.</span>';
+      setTimeout(() =>{
+        habilitar_Movimiento();
+        modal.hide()
+      },2500);
+    }
+  } catch (error) {
+    console.error("Error al procesar la respuesta:", error);
+    alert("Ocurrió un error al enviar la respuesta.");
+  }
 }
 
-function completarMiniJuego(paciente) {
-  paciente.patientStatus = "treated";
-  document.getElementById("minijuego-modal").style.display = "none";
-  drawScene(document.getElementById("game-canvas").getContext("2d"));
-  document.getElementById("dialogo-contextual").style.display = "none";
-  alert("¡Inyección completada! ✅");
+function mostrarModalfinal(mensaje) {
+  entradaHabilitada = false; // Desactivar entrada mientras se atiende
+  document.getElementById('modalMensaje').innerText = mensaje;
+  contenedor.innerHTML = ""; // limpiar anterior
+  respuestaContainer.innerHTML = `
+    <div>Felicitaciones por pasar el nivel, ¿quieres jugar de vuelta o volver al menú?</div>
+    <button onclick="play_again()">Jugar de nuevo</button>
+    <button onclick="back()">Volver al menú</button>
+  `;
+
+  modal.show();
 }
 
-
-function drawPixelMachine(ctx, x, y, machineType) {
-  let imgSrc, width, height;
-  if (machineType === "xray") {
-    imgSrc = "../assets/entities/machine_xray.png";
-    width = 28;
-    height = 28;
-  } else if (machineType === "monitor") {
-    imgSrc = "../assets/entities/machine_monitor.png";
-    width = 24;
-    height = 32;
-  } else {
-    return;
-  }
-
-  if (!drawPixelMachine.images) drawPixelMachine.images = {};
-  if (!drawPixelMachine.images[machineType]) {
-    const img = new Image();
-    img.src = imgSrc;
-    img.loaded = false;
-    img.onload = () => {
-      img.loaded = true;
-      drawScene(ctx);
-    };
-    drawPixelMachine.images[machineType] = img;
-  }
-  const img = drawPixelMachine.images[machineType];
-  if (img.loaded) {
-    ctx.drawImage(img, x, y, width, height);
+function verificar_atendidos() {
+  const pacientesAtendidos = entities.some(e => e.type === "bed" && e.patient && e.patientStatus === "sick");
+  console.log("Pacientes atendidos:", !pacientesAtendidos);
+  if (!pacientesAtendidos) {
+    setTimeout(() => {
+      mostrarModalfinal("¡Lograste pasar el nivel!");
+      // No cerramos el modal aquí, así que permanece abierto
+    }, 3000);
   }
 }
