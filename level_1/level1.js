@@ -488,77 +488,57 @@ function drawDoctor(ctx, x, y) {
 
   // Mostrar nube de diálogo al iniciar el juego con información sobre urgencias médicas
   if (typeof drawDoctor.dialogShown === "undefined") {
-    entradaHabilitada = false;
     drawDoctor.dialogShown = true;
-    // Ocultar el temporizador visualmente
-    if (timerElement) timerElement.style.display = "none";
-
-    // Detener el temporizador si está corriendo
-    if (typeof intervalo !== "undefined") clearInterval(intervalo);
-
-    setTimeout(() => {
-      const canvas = ctx.canvas;
-      const dialog = document.createElement("div");
-      dialog.id = "doctor-initial-dialog";
-      dialog.style.position = "absolute";
-      dialog.style.left = (canvas.offsetLeft + x + 60) + "px";
-      dialog.style.top = (canvas.offsetTop + y - 10) + "px";
-      dialog.style.background = "rgba(10, 20, 40, 0.98)";
-      dialog.style.border = "2px solid #00ffff";
-      dialog.style.borderRadius = "12px";
-      dialog.style.padding = "10px 16px";
-      dialog.style.fontFamily = "'Press Start 2P', Consolas, 'Courier New', monospace";
-      dialog.style.fontSize = "0.75em";
-      dialog.style.zIndex = 1000;
-      dialog.style.maxWidth = "220px";
-      dialog.style.color = "#fff";
-      dialog.style.textShadow = "none";
-      dialog.style.letterSpacing = "0.5px";
-      dialog.innerHTML = `
-      <span style="font-size:1em; color:#00ffff; font-weight:bold; display:block; margin-bottom:4px;">
-        &#128657; Urgencias &#128657;
-      </span>
-      <span style="color:#fff;">
-        <b>¿Sabías?</b> El área de <b style="color:#00ffff;">urgencias</b> es donde se atienden los casos más graves y que requieren atención inmediata.<br>
-        <span style="color:#00ffea;">¡Actúa rápido y mantén la calma!</span>
-      </span>
-      <br>
-      <button id="doctor-initial-ok" style="
-        margin-top:8px;
-        background:#00ffff;
-        color:#000;
-        border:1px solid #00ffff;
-        border-radius:6px;
-        font-family:'Press Start 2P', Consolas, 'Courier New', monospace;
-        font-size:0.85em;
-        padding:3px 10px;
-        box-shadow:none;
-        cursor:pointer;
-      ">OK</button>
-      `;
-      document.body.appendChild(dialog);
-      // Función para cerrar el diálogo y reanudar el temporizador
-      function cerrarDialogo() {
-        if (dialog.parentNode) dialog.parentNode.removeChild(dialog);
-        entradaHabilitada = true;
-        // Mostrar el temporizador nuevamente
-        if (timerElement) timerElement.style.display = "";
-        // Reanudar el temporizador solo si no está corriendo
-        if (typeof intervalo !== "undefined") clearInterval(intervalo);
-        intervalo = setInterval(actualizarTemporizador, 1000);
-      }
-
-      // Botón OK para cerrar y habilitar movimiento
-      const okBtn = dialog.querySelector("#doctor-initial-ok");
-      okBtn.onclick = cerrarDialogo;
-
-    }, 800); // Mostrar poco después de iniciar
+    mensaje_inicial(ctx,x,y);
   }
 
   if (drawDoctor.image.loaded) {
     ctx.drawImage(drawDoctor.image, x, y, width, height);
   }
 }
+
+function mensaje_inicial(ctx,x,y){
+    entradaHabilitada = false;
+    // Ocultar el temporizador visualmente
+    if (timerElement) timerElement.style.display = "none";
+    // Detener el temporizador si está corriendo
+    if (typeof intervalo !== "undefined") clearInterval(intervalo);
+
+    setTimeout(() => {
+      cabecera = `<span style="font-size:1em; color:#00ffff; font-weight:bold; display:block; margin-bottom:4px;">
+        &#128657; Urgencias &#128657;
+      </span>`;
+      cuerpo_mensaje= `
+      <span style="color:#fff;">
+        <b>¿Sabías?</b> El área de <b style="color:#00ffff;">urgencias</b> es donde se atienden los casos más graves y que requieren atención inmediata.<br>
+        <span style="color:#00ffea;">¡Actúa rápido y mantén la calma!</span>
+      </span>
+      <br>`;
+      View_Modal(cabecera,cuerpo_mensaje);
+      
+    }, 900); // Mostrar poco después de iniciar
+}
+
+function cerrarDialogo() {
+  entradaHabilitada = true;
+  // Mostrar el temporizador nuevamente
+  if (timerElement) timerElement.style.display = "";
+  // Reanudar el temporizador solo si no está corriendo
+  if (typeof intervalo !== "undefined") clearInterval(intervalo);
+  tiempoRestante = 180; // 3 minutos = 180 segundos
+  intervalo = setInterval(actualizarTemporizador, 1000);
+  modal.hide();
+}
+
+function View_Modal(cabecera, cuerpo_mensaje) {
+  entradaHabilitada = false; // Desactivar entrada mientras se atiende
+  document.getElementById('modalMensaje').innerHTML = cabecera;
+  contenedor.innerHTML = ""; // limpiar anterior
+  respuestaContainer.innerHTML = cuerpo_mensaje ;
+  modal.show();
+}
+
+
 
 function drawPixelMachine(ctx, x, y, machineType) {
   let imgSrc, width, height;
@@ -1297,3 +1277,4 @@ function stopTimer() {
       }
       originalMostrarModalTiempoAgotado();
     };
+
