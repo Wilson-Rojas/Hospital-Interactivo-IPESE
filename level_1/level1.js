@@ -491,7 +491,6 @@ function drawDoctor(ctx, x, y) {
     drawDoctor.dialogShown = true;
     mensaje_inicial(ctx,x,y);
   }
-
   if (drawDoctor.image.loaded) {
     ctx.drawImage(drawDoctor.image, x, y, width, height);
   }
@@ -539,8 +538,6 @@ function View_Modal(cabecera, cuerpo_mensaje, button) {
   respuestaContainer.innerHTML = cuerpo_mensaje +"<br>" + button;
   modal.show();
 }
-
-
 
 function drawPixelMachine(ctx, x, y, machineType) {
   let imgSrc, width, height;
