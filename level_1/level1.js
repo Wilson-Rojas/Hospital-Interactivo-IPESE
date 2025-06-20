@@ -48,8 +48,20 @@ window.addEventListener("keydown", (e) => {
       break;
     case 'e':
     case 'E':
-      intentarAtenderPaciente();
-      break
+      // Solo permitir si está cerca de una cama con paciente enfermo
+      const cercaDeCama = entities.some(entity =>
+        entity.type === "bed" &&
+        entity.patient &&
+        entity.patientStatus === "sick" &&
+        (
+          (Math.abs(doctor.x - entity.x) === 1 && doctor.y === entity.y) ||
+          (Math.abs(doctor.y - entity.y) === 1 && doctor.x === entity.x)
+        )
+      );
+      if (cercaDeCama) {
+        intentarAtenderPaciente();
+      }
+      break;
   }
 
   const destinoX = doctor.x;
@@ -609,6 +621,9 @@ function intentarAtenderPaciente() {
       const dy = Math.abs(doctor.y - entity.y);
       if (dx + dy === 1) {
         mostrarModal("JUEGO DE PREGUNTAS");
+      }else {
+        // Si no está al lado de una cama, mostrar mensaje de error
+        respuestaContainer.innerHTML = "";
       }
     }
   }
