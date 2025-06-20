@@ -514,27 +514,29 @@ function mensaje_inicial(ctx,x,y){
         <span style="color:#00ffea;">¡Actúa rápido y mantén la calma!</span>
       </span>
       <br>`;
-      View_Modal(cabecera,cuerpo_mensaje);
+      button = `<button class="btn btn-secondary mt-3" onclick="cerrarDialogo()" >Iniciar Nivel</button>`;
+      View_Modal(cabecera,cuerpo_mensaje,button);
       
     }, 900); // Mostrar poco después de iniciar
 }
 
 function cerrarDialogo() {
   entradaHabilitada = true;
-  // Mostrar el temporizador nuevamente
-  if (timerElement) timerElement.style.display = "";
   // Reanudar el temporizador solo si no está corriendo
   if (typeof intervalo !== "undefined") clearInterval(intervalo);
   tiempoRestante = 180; // 3 minutos = 180 segundos
+  actualizarTemporizador(); //Que inicialice el temporizador antes del div
   intervalo = setInterval(actualizarTemporizador, 1000);
+  // Mostrar el temporizador nuevamente
+  if (timerElement) timerElement.style.display = "";
   modal.hide();
 }
 
-function View_Modal(cabecera, cuerpo_mensaje) {
+function View_Modal(cabecera, cuerpo_mensaje, button) {
   entradaHabilitada = false; // Desactivar entrada mientras se atiende
   document.getElementById('modalMensaje').innerHTML = cabecera;
   contenedor.innerHTML = ""; // limpiar anterior
-  respuestaContainer.innerHTML = cuerpo_mensaje ;
+  respuestaContainer.innerHTML = cuerpo_mensaje +"<br>" + button;
   modal.show();
 }
 

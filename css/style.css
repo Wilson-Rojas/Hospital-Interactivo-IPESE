@@ -335,3 +335,25 @@ body {
   outline: 2px solid #fff700;
   outline-offset: 2px;
 }
+
+/* Estilo retro arcade 8-bit para el modal */
+.modal-content {
+  background-color: #181818;
+  border: 3px solid #36d1c4;
+  box-shadow: 0 0 10px #1a6666;
+  font-family: 'Press Start 2P', cursive;
+  color: #36d1c4;
+}
+
+.modal-body .btn {
+  font-family: 'Press Start 2P', cursive;
+  background-color: #232323;
+  border: 2px solid #36d1c4;
+  color: #36d1c4;
+  box-shadow: 0 0 5px #1a6666;
+}
+
+.modal-body .btn:hover {
+  background-color: #36d1c4;
+  color: #232323;
+}
