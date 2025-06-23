@@ -168,7 +168,7 @@ function IniciarNivel(level) {
 
   // Generar entidades aleatorias para el nivel
   const numBeds = 4; // Número maximo de camas para el nivel
-  const numMachines = 2; //numero de las mauinas para el nivel
+  const numMachines = 2; //número de las maquinas para el nivel
   const cols = 17;
   const rows = 12;
 
@@ -213,7 +213,7 @@ function IniciarNivel(level) {
   
 }
 
-//funcionalidad para obtener valores ramdons 
+//funcionalidad para obtener valores randoms 
 function getRandomPositions(count, cols, rows, occupied) {
   const positions = new Set();
   while (positions.size < count) {
@@ -492,29 +492,28 @@ function mostrarPregunta(numero) {
       respuestaCorrecta = "36-37°C";
       break;
     case 2:
-      pregunta = "¿Cuál es el órgano principal del sistema circulatorio?";
-      opciones = ["Pulmón", "Corazón", "Riñón"];
-      respuestaCorrecta = "Corazón";
-      break;
+      pregunta = "¿Cuál es el órgano encargado de Filtrar la sangre y formar la orina?";
+      opciones = ["Hígado", "Corazón", "Riñón"];
+      respuestaCorrecta = "Riñón"
     case 3:
-      pregunta = "¿Qué significa 'ICU'?";
-      opciones = ["Unidad Clínica Única", "Unidad de Cuidados Intensivos", "Inyección Cardiaca Urgente"];
-      respuestaCorrecta = "Unidad de Cuidados Intensivos";
+      pregunta = "¿Cuál es el órgano más grande del cuerpo humano?";
+      opciones = ["La Piel", "Intestinos", "Pulmones"];
+      respuestaCorrecta = "La Piel";
       break;
     case 4:
-      pregunta = "¿Cuál es el antiséptico más usado?";
-      opciones = ["Azúcar", "Alcohol", "Aceite"];
-      respuestaCorrecta = "Alcohol";
+      pregunta = "¿Cuál es el órgano más fuerte del cuerpo humano?";
+      opciones = ["Corazón", "Músculos", "Lengua"];
+      respuestaCorrecta = "Lengua";
       break;
     case 5:
-      pregunta = "¿Qué vitamina se obtiene principalmente del sol?";
-      opciones = ["Vitamina D", "Vitamina C", "Vitamina A"];
-      respuestaCorrecta = "Vitamina D";
+      pregunta = "¿Cuál es el instrumento que sirve para medir la presión arterial?";
+      opciones = ["Tensiómetro", "Termómetro", "Ostetoscopio"];
+      respuestaCorrecta = "Tensiómetro";
       break;
     case 6:
-      pregunta = "¿Cuál es el órgano encargado de filtrar la sangre?";
-      opciones = ["Riñón", "Hígado", "Corazón"];
-      respuestaCorrecta = "Riñón";
+      pregunta = "¿En qué Sistema del cuerpo Humano el oxígeno es transportado y el dióxido de carbono es eliminado?";
+      opciones = ["Sistema Circulatorio", "Sistema Endócrino", "Sistema Respiratorio"];
+      respuestaCorrecta = "Sistema Respiratorio";
       break;
   }
 
