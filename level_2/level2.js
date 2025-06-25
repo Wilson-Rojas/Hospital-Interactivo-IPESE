@@ -182,14 +182,20 @@ function IniciarNivel(level) {
 
   // Posiciones directas de las camas 
   const bedPositions = [
-    { x: 4, y: 6 },
+    { x: 3, y: 3 },
     { x: 7, y: 3 },
-    { x: 10, y: 6 },
+    { x: 11, y: 3 },
+    { x: 3, y: 8},
+    { x: 7, y: 8 },
+    { x: 11, y: 8 },
   ]
   const machinePositions = [
-    { x: 5, y: 6 },
+    { x: 4, y: 3 },
     { x: 8, y: 3 },
-    { x: 11, y: 6 },
+    { x: 12, y: 3 },
+    { x: 4, y: 8 },
+    { x: 8, y: 8 },
+    { x: 12, y: 8 },
   ]
   
   const beds = bedPositions.map((pos) => ({
