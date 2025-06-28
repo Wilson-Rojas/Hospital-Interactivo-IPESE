@@ -219,20 +219,6 @@ function pausa() {
   };
 }
 
-/* Permitir pausar con la tecla "p" o "P" y reanudar con "p" o "P" si está en pausa
-window.addEventListener("keydown", (e) => {
-  const overlay = document.getElementById('pausaOverlay');
-  if ((e.key === "p" || e.key === "P")) {
-    if (entradaHabilitada && !overlay) {
-      pausa();
-    } else if (!entradaHabilitada && overlay) {
-      // Simula click en el botón de reanudar si está en pausa
-      const btn = document.getElementById('btnReanudar');
-      if (btn) btn.click();
-    }
-  }
-});*/
-
 function IniciarNivel(level) {
   // Simulación de sonido retro y efecto de animación
   console.log("Iniciando el Nivel", level);
@@ -263,13 +249,13 @@ function IniciarNivel(level) {
 // Posiciones directas de las camas 
   const bedPositions = [
     { x: 3, y: 1 },
-  /*  { x: 7, y: 1 },
+    { x: 7, y: 1 },
     { x: 11, y: 1 },
     { x: 15, y: 1},
     //camas bajas
     { x: 3, y: 8 },
     { x: 7, y: 8 },
-    { x: 11, y: 8 },*/
+    { x: 11, y: 8 },
     { x: 15, y: 8 }
   ]
   const machinePositions = [
@@ -306,29 +292,10 @@ function IniciarNivel(level) {
   
 }
 
-//funcionalidad para obtener valores ramdons 
-function getRandomPositions(count, cols, rows, occupied) {
-  const positions = new Set();
-  while (positions.size < count) {
-    const x = Math.floor(Math.random() * (cols - 4)) + 2;
-    const y = Math.floor(Math.random() * (rows - 4)) + 2;
-    const key = `${x},${y}`;
-    if (!positions.has(key) && !occupied.has(key)) {
-      positions.add(key);
-      occupied.add(key);
-    }
-  }
-  return Array.from(positions).map(pos => {
-    const [x, y] = pos.split(',').map(Number);
-    return { x, y };
-  });
-}
-
 function drawScene(ctx) {
   const tileSize = 33; // tamaño de tile cuadrado para vista top-down
   const cols = 17;
   const rows = 12;
-  // Limpiar canvas con color de fondo del hospital
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   // Dibujar grid del suelo
   drawTopDownGrid(ctx, cols, rows, tileSize);
@@ -650,49 +617,177 @@ function mostrarPregunta(numero) {
   let opciones = [];
   switch (numero) {
     case 1:
+      pregunta = "¿Cuál es el número de emergencias médicas en la mayoría de los países?";
+      opciones = ["911", "411", "123"];
+      respuestaCorrecta = "911";
+      break;
+    case 2:
+      pregunta = "¿Qué debes hacer primero ante una persona inconsciente que no respira?";
+      opciones = ["Llamar a emergencias y comenzar RCP", "Darle agua", "Moverla bruscamente"];
+      respuestaCorrecta = "Llamar a emergencias y comenzar RCP";
+      break;
+    case 3:
+      pregunta = "¿Qué maniobra se utiliza para desobstruir las vías respiratorias en un atragantamiento?";
+      opciones = ["Maniobra de Heimlich", "Masaje cardíaco", "Respiración boca a boca"];
+      respuestaCorrecta = "Maniobra de Heimlich";
+      break;
+    case 4:
+      pregunta = "¿Qué hacer ante una quemadura leve?";
+      opciones = ["Enfriar con agua", "Aplicar hielo directamente", "Cubrir con aceite"];
+      respuestaCorrecta = "Enfriar con agua";
+      break;
+    case 5:
+      pregunta = "¿Qué NO se debe hacer ante una fractura expuesta?";
+      opciones = ["Intentar acomodar el hueso", "Cubrir con un paño limpio", "Llamar a emergencias"];
+      respuestaCorrecta = "Intentar acomodar el hueso";
+      break;
+    case 6:
+      pregunta = "¿Cuál es el síntoma más común de un accidente cerebrovascular?";
+      opciones = ["Debilidad repentina en un lado del cuerpo", "Dolor abdominal", "Fiebre alta"];
+      respuestaCorrecta = "Debilidad repentina en un lado del cuerpo";
+      break;
+    case 7:
+      pregunta = "¿Qué hacer si una persona sufre una convulsión?";
+      opciones = ["Proteger la cabeza y despejar el área", "Sujetar con fuerza", "Darle agua inmediatamente"];
+      respuestaCorrecta = "Proteger la cabeza y despejar el área";
+      break;
+    case 8:
+      pregunta = "¿Qué indica una piel fría, pálida y sudorosa en un paciente de urgencias?";
+      opciones = ["Shock", "Fiebre", "Deshidratación leve"];
+      respuestaCorrecta = "Shock";
+      break;
+    case 9:
+      pregunta = "¿Qué síntoma es típico de un infarto agudo de miocardio?";
+      opciones = ["Dolor en el pecho", "Dolor de cabeza", "Dolor de rodilla"];
+      respuestaCorrecta = "Dolor en el pecho";
+      break;
+    case 10:
+      pregunta = "¿Qué hacer si una persona tiene una hemorragia grave?";
+      opciones = ["Aplicar presión directa sobre la herida", "Esperar a que pare sola", "Lavar con agua fría"];
+      respuestaCorrecta = "Aplicar presión directa sobre la herida";
+      break;
+    case 11:
       pregunta = "¿Cuál es la temperatura normal del cuerpo humano?";
       opciones = ["38-39°C", "36-37°C", "34-35°C"];
       respuestaCorrecta = "36-37°C";
       break;
-    case 2:
-      pregunta = "¿Cuál es el órgano principal del sistema circulatorio?";
-      opciones = ["Pulmón", "Corazón", "Riñón"];
+    case 12:
+      pregunta = "¿Qué órgano es el principal responsable de bombear sangre en emergencias?";
+      opciones = ["Corazón", "Pulmón", "Riñón"];
       respuestaCorrecta = "Corazón";
       break;
-    case 3:
-      pregunta = "¿Qué significa 'ICU'?";
-      opciones = ["Unidad Clínica Única", "Unidad de Cuidados Intensivos", "Inyección Cardiaca Urgente"];
+    case 13:
+      pregunta = "¿Qué significa 'ICU' en un hospital?";
+      opciones = ["Unidad de Cuidados Intensivos", "Unidad Clínica Única", "Inyección Cardiaca Urgente"];
       respuestaCorrecta = "Unidad de Cuidados Intensivos";
       break;
-    case 4:
-      pregunta = "¿Cuál es el antiséptico más usado?";
-      opciones = ["Azúcar", "Alcohol", "Aceite"];
+    case 14:
+      pregunta = "¿Cuál es el antiséptico más usado en urgencias?";
+      opciones = ["Alcohol", "Azúcar", "Aceite"];
       respuestaCorrecta = "Alcohol";
       break;
-    case 5:
-      pregunta = "¿Qué vitamina se obtiene principalmente del sol?";
-      opciones = ["Vitamina D", "Vitamina C", "Vitamina A"];
-      respuestaCorrecta = "Vitamina D";
+    case 15:
+      pregunta = "¿Qué hacer si una persona presenta dificultad respiratoria severa?";
+      opciones = ["Llamar a emergencias y mantener la calma", "Darle agua", "Acostarla boca abajo"];
+      respuestaCorrecta = "Llamar a emergencias y mantener la calma";
       break;
-    case 6:
-      pregunta = "¿Cuál es el órgano encargado de filtrar la sangre?";
-      opciones = ["Riñón", "Hígado", "Corazón"];
-      respuestaCorrecta = "Riñón";
+    case 16:
+      pregunta = "¿Qué hacer ante una sospecha de fractura de columna?";
+      opciones = ["No mover al paciente y llamar a emergencias", "Sentarlo", "Darle analgésicos"];
+      respuestaCorrecta = "No mover al paciente y llamar a emergencias";
+      break;
+    case 17:
+      pregunta = "¿Qué hacer si una persona tiene una reacción alérgica grave (anafilaxia)?";
+      opciones = ["Administrar adrenalina y llamar a emergencias", "Darle agua", "Esperar a que pase"];
+      respuestaCorrecta = "Administrar adrenalina y llamar a emergencias";
+      break;
+    case 18:
+      pregunta = "¿Qué hacer ante una sospecha de traumatismo craneal?";
+      opciones = ["No mover al paciente y buscar ayuda médica", "Darle café", "Ponerlo de pie rápidamente"];
+      respuestaCorrecta = "No mover al paciente y buscar ayuda médica";
+      break;
+    case 19:
+      pregunta = "¿Qué hacer si una persona se desmaya?";
+      opciones = ["Acostarla y elevar las piernas", "Darle un vaso de agua de inmediato", "Sentarla rápidamente"];
+      respuestaCorrecta = "Acostarla y elevar las piernas";
+      break;
+    case 20:
+      pregunta = "¿Qué hacer si una persona presenta signos de accidente cerebrovascular?";
+      opciones = ["Llamar a emergencias inmediatamente", "Esperar a ver si mejora", "Darle aspirina sin consultar"];
+      respuestaCorrecta = "Llamar a emergencias inmediatamente";
+      break;
+    case 21:
+      pregunta = "Según IPS, ¿si se rompe la pierna izquierda qué se hace?";
+      opciones = ["Cortar la derecha", "No atenderle", "Darle dolanet y espere"];
+      respuestaCorrecta = opciones;
       break;
   }
 
+  // Estilos para simular un anotador
+  const anotadorStyle = `
+    background: #fffbe7;
+    border: 2px solid #e0c97f;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px #e0c97f44;
+    padding: 24px 28px 18px 38px;
+    margin: 0 auto 12px auto;
+    max-width: 420px;
+    font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
+    position: relative;
+    min-width: 260px;
+  `;
+  const rayasStyle = `
+    background: repeating-linear-gradient(
+      to bottom,
+      #fffbe7 0px,
+      #fffbe7 28px,
+      #f7e7b7 29px,
+      #fffbe7 30px
+    );
+    border-radius: 12px;
+    padding: 0;
+  `;
+  const espiralStyle = `
+    position: absolute;
+    left: -18px;
+    top: 18px;
+    width: 12px;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 2;
+  `;
+
+  // Espirales del anotador (simulación)
+  const espirales = `<div style="${espiralStyle}">
+    <div style="width:10px;height:10px;border-radius:50%;background:#b8b8b8;margin-bottom:8px;"></div>
+    <div style="width:10px;height:10px;border-radius:50%;background:#b8b8b8;margin-bottom:8px;"></div>
+    <div style="width:10px;height:10px;border-radius:50%;background:#b8b8b8;margin-bottom:8px;"></div>
+    <div style="width:10px;height:10px;border-radius:50%;background:#b8b8b8;margin-bottom:8px;"></div>
+    <div style="width:10px;height:10px;border-radius:50%;background:#b8b8b8;"></div>
+  </div>`;
+
   const htmlOpciones = opciones.map((op, i) => `
-      <label style="display:inline-flex;align-items:center;margin-right:12px;">
-        <input class="opciones_pregunta" type="radio" name="respuesta" value="${op}" id="opcion${i}" style="margin-right:4px; margin-top:4px;">
-        ${op}
+    <div style="margin-bottom: 10px;">
+      <label style="display:flex;align-items:center;font-size:1.08em;color:#111;">
+        <input class="opciones_pregunta" type="radio" name="respuesta" value="${op}" id="opcion${i}" style="margin-right:8px; accent-color:#e0c97f;">
+        <span>${op}</span>
       </label>
+    </div>
   `).join("");
 
   contenedor.innerHTML = `
-    <p><strong>${pregunta}</strong></p>
-    ${htmlOpciones}
-    <br>
-    <button onclick="Responder()">Enviar</button>
+    <div style="${rayasStyle}">
+      <div style="${anotadorStyle}">
+        ${espirales}
+        <p style="font-weight:bold;font-size:1.13em;margin-bottom:18px;color:#b48b00;text-shadow:0 1px 0 #fff;">${pregunta}</p>
+        <div>
+          ${htmlOpciones}
+        </div>
+        <button onclick="Responder()" style="margin-top:10px;background:#e0c97f;color:#6d4c00;border:none;padding:8px 18px;border-radius:6px;font-weight:bold;box-shadow:0 2px 6px #e0c97f44;cursor:pointer;">Enviar</button>
+      </div>
+    </div>
   `;
 }
 
@@ -826,8 +921,6 @@ function stopTimer() {
       </div>
       `;
       overlay.style.display = 'flex';
-    
-
       // Botones
       const btnReintentar = document.getElementById('btnReintentar');
       const btnIrInicio = document.getElementById('btnIrInicio');
@@ -867,7 +960,6 @@ function stopTimer() {
       }, 300);
       };
     }
-
 
     // Función para detener el temporizador y evitar que vuelva a ejecutarse
     function stopTimer() {
@@ -969,16 +1061,18 @@ function stopTimer() {
     }
 
     // Llama a verificarFinDeJuego después de atender un paciente correctamente
-    // Modifica la función Responder para llamar a verificarFinDeJuego al final del bloque de respuesta correcta:
+      let preguntaRespondida = false;
     const originalResponder = Responder;
     Responder = function() {
       try {
+        if (preguntaRespondida) return; // Evita responder dos veces la misma pregunta
         const respuestaUsuario = document.querySelector('input[name="respuesta"]:checked')?.value;
         if (respuestaUsuario == undefined) {
           respuestaContainer.innerHTML = '<span style="color:orange;font-weight:bold;">Por favor selecciona una respuesta</span>';
           return
         }
         if (respuestaUsuario === respuestaCorrecta) {
+          preguntaRespondida = true;
           respuestaContainer.innerHTML = '<span style="color:green;font-weight:bold;">¡Respuesta correcta!</span>';
           contenedor.innerHTML = ""; // limpiar anterior
           for (const entity of entities) {
@@ -995,6 +1089,7 @@ function stopTimer() {
           setTimeout(() =>{
             habilitar_Movimiento();
             modal.hide();
+            preguntaRespondida = false; // Permite responder la siguiente pregunta
             verificarFinDeJuego(); // Verifica si el juego terminó
           },2500);
         } else {
@@ -1007,7 +1102,6 @@ function stopTimer() {
     };
     
     //minijuego
-    // aparece antes de responder la pregunta, y tras completarlo se puede responder
 
     let minijuegoEnCurso = false;
     let juegoTerminadoPorTiempo = false; // Para evitar sobrescribir el modal de tiempo agotado
@@ -1038,16 +1132,16 @@ function stopTimer() {
 
       var bricks = [];
       for(var c=0; c<brickColumnCount; c++) {
-        bricks[c] = [];
-        for(var r=0; r<brickRowCount; r++) {
-          bricks[c][r] = { x: 0, y: 0, status: 1 };
-        }
+      bricks[c] = [];
+      for(var r=0; r<brickRowCount; r++) {
+        bricks[c][r] = { x: 0, y: 0, status: 1 };
+      }
       }
 
       function cleanup() {
-        document.removeEventListener("keydown", keyDownHandler, false);
-        document.removeEventListener("keyup", keyUpHandler, false);
-        document.removeEventListener("mousemove", mouseMoveHandler, false);
+      document.removeEventListener("keydown", keyDownHandler, false);
+      document.removeEventListener("keyup", keyUpHandler, false);
+      document.removeEventListener("mousemove", mouseMoveHandler, false);
       }
 
       document.addEventListener("keydown", keyDownHandler, false);
@@ -1055,143 +1149,166 @@ function stopTimer() {
       document.addEventListener("mousemove", mouseMoveHandler, false);
 
       function keyDownHandler(e) {
-        if(e.code  == "ArrowRight") {
-          rightPressed = true;
-        }
-        else if(e.code == 'ArrowLeft') {
-          leftPressed = true;
-        }
+      if(e.code  == "ArrowRight") {
+        rightPressed = true;
+      }
+      else if(e.code == 'ArrowLeft') {
+        leftPressed = true;
+      }
       }
       function keyUpHandler(e) {
-        if(e.code == 'ArrowRight') {
-          rightPressed = false;
-        }
-        else if(e.code == 'ArrowLeft') {
-          leftPressed = false;
-        }
+      if(e.code == 'ArrowRight') {
+        rightPressed = false;
+      }
+      else if(e.code == 'ArrowLeft') {
+        leftPressed = false;
+      }
       }
       function mouseMoveHandler(e) {
-        var relativeX = e.clientX - canvas.getBoundingClientRect().left;
-        if(relativeX > 0 && relativeX < canvas.width) {
-          paddleX = relativeX - paddleWidth/2;
-        }
+      var relativeX = e.clientX - canvas.getBoundingClientRect().left;
+      if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+      }
       }
       function collisionDetection() {
-        for(var c=0; c<brickColumnCount; c++) {
-          for(var r=0; r<brickRowCount; r++) {
-            var b = bricks[c][r];
-            if(b.status == 1) {
-              if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
-                dy = -dy;
-                b.status = 0;
-                score++;
-                if(score == brickRowCount*brickColumnCount) {
-                  finished = true;
-                  cleanup();
-                  setTimeout(() => {
-                    if (typeof onFinish === "function") onFinish("win");
-                  }, 500);
-                }
-              }
-            }
+      for(var c=0; c<brickColumnCount; c++) {
+        for(var r=0; r<brickRowCount; r++) {
+        var b = bricks[c][r];
+        if(b.status == 1) {
+          if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+          dy = -dy;
+          b.status = 0;
+          score++;
+          if(score == brickRowCount*brickColumnCount) {
+            finished = true;
+            cleanup();
+            setTimeout(() => {
+            if (typeof onFinish === "function") onFinish("win");
+            }, 500);
+          }
           }
         }
+        }
+      }
+      }
+
+      // Imagen de la aguja para la bola
+      if (!minijuego.needleImg) {
+      minijuego.needleImg = new Image();
+      minijuego.needleImg.src = "../assets/entities/needle.png";
+      }
+      // Imagen de la cama para los ladrillos
+      if (!minijuego.bedImg) {
+      minijuego.bedImg = new Image();
+      minijuego.bedImg.src = "../assets/entities/bed1.png";
       }
 
       function drawBall() {
+      // Hacer la imagen de la aguja más grande (por ejemplo, 2.5x el radio)
+      const scale = 2.8;
+      const imgSize = ballRadius * scale * 2;
+      if (minijuego.needleImg && minijuego.needleImg.complete) {
+        ctx.drawImage(minijuego.needleImg, x - imgSize / 2, y - imgSize / 2, imgSize, imgSize);
+      } else {
         ctx.beginPath();
-        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+        ctx.arc(x, y, ballRadius * scale, 0, Math.PI * 2);
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
+      }
+    
       }
       function drawPaddle() {
-        ctx.beginPath();
-        ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
+      ctx.beginPath();
+      ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+      ctx.fillStyle = "#0095DD";
+      ctx.fill();
+      ctx.closePath();
       }
       function drawBricks() {
-        for(var c=0; c<brickColumnCount; c++) {
-          for(var r=0; r<brickRowCount; r++) {
-            if(bricks[c][r].status == 1) {
-              var brickX = (r*(brickWidth+brickPadding))+brickOffsetLeft;
-              var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
-              bricks[c][r].x = brickX;
-              bricks[c][r].y = brickY;
-              ctx.beginPath();
-              ctx.rect(brickX, brickY, brickWidth, brickHeight);
-              ctx.fillStyle = "#0095DD";
-              ctx.fill();
-              ctx.closePath();
-            }
+      for(var c=0; c<brickColumnCount; c++) {
+        for(var r=0; r<brickRowCount; r++) {
+        if(bricks[c][r].status == 1) {
+          var brickX = (r*(brickWidth+brickPadding))+brickOffsetLeft;
+          var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
+          bricks[c][r].x = brickX;
+          bricks[c][r].y = brickY;
+          if (minijuego.bedImg && minijuego.bedImg.complete) {
+          ctx.drawImage(minijuego.bedImg, brickX, brickY, brickWidth, brickHeight);
+          } else {
+          ctx.beginPath();
+          ctx.rect(brickX, brickY, brickWidth, brickHeight);
+          ctx.fillStyle = "#0095DD";
+          ctx.fill();
+          ctx.closePath();
           }
         }
+        }
+      }
       }
       function drawScore() {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#00ffff";
-        ctx.fillText("Score: "+score, 8, 20);
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#00ffff";
+      ctx.fillText("Score: "+score, 8, 20);
       }
       function drawLives() {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#00ffff";
-        ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#00ffff";
+      ctx.fillText("Lives: "+lives, canvas.width-65, 20);
       }
 
       function draw() {
-        if (finished || juegoTerminadoPorTiempo) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBricks();
-        drawBall();
-        drawPaddle();
-        drawScore();
-        drawLives();
-        collisionDetection();
+      if (finished || juegoTerminadoPorTiempo) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBricks();
+      drawBall();
+      drawPaddle();
+      drawScore();
+      drawLives();
+      collisionDetection();
 
-        if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-          dx = -dx;
+      if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+        dx = -dx;
+      }
+      if(y + dy < ballRadius) {
+        dy = -dy;
+      }
+      else if(y + dy > canvas.height-ballRadius) {
+        if(x > paddleX && x < paddleX + paddleWidth) {
+        dy = -dy;
         }
-        if(y + dy < ballRadius) {
-          dy = -dy;
+        else {
+        lives--;
+        if(!lives) {
+          finished = true;
+          cleanup();
+          setTimeout(() => {
+          if (juegoTerminadoPorTiempo) return;
+          juegoTerminadoPorTiempo = true;
+          mostrarModalTiempoAgotado(true);
+          if (typeof onFinish === "function") onFinish("lose");
+          }, 500);
         }
-        else if(y + dy > canvas.height-ballRadius) {
-          if(x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy;
-          }
-          else {
-            lives--;
-            if(!lives) {
-              finished = true;
-              cleanup();
-              setTimeout(() => {
-                if (juegoTerminadoPorTiempo) return;
-                juegoTerminadoPorTiempo = true;
-                mostrarModalTiempoAgotado(true);
-                if (typeof onFinish === "function") onFinish("lose");
-              }, 500);
-            }
-            else {
-              x = canvas.width/2;
-              y = canvas.height-30;
-              dx = 2;
-              dy = -2;
-              paddleX = (canvas.width-paddleWidth)/2;
-            }
-          }
+        else {
+          x = canvas.width/2;
+          y = canvas.height-30;
+          dx = 2;
+          dy = -2;
+          paddleX = (canvas.width-paddleWidth)/2;
         }
+        }
+      }
 
-        if(rightPressed && paddleX < canvas.width-paddleWidth) {
-          paddleX += 7;
-        }
-        else if(leftPressed && paddleX > 0) {
-          paddleX -= 7;
-        }
+      if(rightPressed && paddleX < canvas.width-paddleWidth) {
+        paddleX += 7;
+      }
+      else if(leftPressed && paddleX > 0) {
+        paddleX -= 7;
+      }
 
-        x += dx;
-        y += dy;
-        requestAnimationFrame(draw);
+      x += dx;
+      y += dy;
+      requestAnimationFrame(draw);
       }
 
       draw();
@@ -1217,9 +1334,9 @@ function stopTimer() {
       }
       overlay.innerHTML = `
       <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
-        <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Elimina el virus!</h3>
-        <canvas id="galagaCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
-        <div id="galagaMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
+      <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Elimina el virus!</h3>
+      <canvas id="galagaCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
+      <div id="galagaMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
       </div>
       `;
       overlay.style.display = 'flex';
@@ -1227,15 +1344,20 @@ function stopTimer() {
       const canvas = document.getElementById("galagaCanvas");
       const ctx = canvas.getContext("2d");
 
-      // Load doctor sprite for player
+      // doctor
       if (!galaga.doctorImg) {
       galaga.doctorImg = new Image();
       galaga.doctorImg.src = "../assets/entities/doctor/negra.png";
       }
-      // Load virus sprite for enemies
+      // virus 
       if (!galaga.virusImg) {
       galaga.virusImg = new Image();
       galaga.virusImg.src = "../assets/entities/virus.png";
+      }
+      // bullet
+      if (!galaga.bulletImg) {
+      galaga.bulletImg = new Image();
+      galaga.bulletImg.src = "../assets/entities/needle.png";
       }
 
       const player = {
@@ -1243,7 +1365,6 @@ function stopTimer() {
       y: canvas.height - 50,
       width: 44,
       height: 48,
-      color: 'white',
       speed: 2,
       bullets: []
       };
@@ -1251,24 +1372,24 @@ function stopTimer() {
       const enemies = [];
       const enemySize = 34;
       const enemySpeed = 1;
-      const rows = 4, cols = 8;
+      const rows = 3, cols = 9;
       let enemyDirection = 1;
 
       // Guardar posiciones iniciales de los enemigos
       const initialEnemyPositions = [];
       for (let r = 0; r < rows; r++) {
       for (let i = 0; i < cols; i++) {
-        const pos = {
-        x: i * (enemySize + 14) + 30,
-        y: r * (enemySize + 14) + 30
-        };
-        initialEnemyPositions.push({ ...pos });
-        enemies.push({
-        ...pos,
-        width: enemySize,
-        height: enemySize,
-        color: '#ff4444'
-        });
+      const pos = {
+      x: i * (enemySize + 14) + 30,
+      y: r * (enemySize + 14) + 30
+      };
+      initialEnemyPositions.push({ ...pos });
+      enemies.push({
+      ...pos,
+      width: enemySize,
+      height: enemySize,
+      color: '#ff4444'
+      });
       }
       }
 
@@ -1287,12 +1408,12 @@ function stopTimer() {
       function shootBullet() {
       if (!canShoot) return;
       player.bullets.push({
-        x: player.x + player.width / 2 - 2.5,
-        y: player.y,
-        width: 5,
-        height: 10,
-        color: '#ffff00',
-        speed: 3
+      x: player.x + player.width / 2 - 2.5,
+      y: player.y,
+      width: 5,
+      height: 10,
+      color: '#ffff00',
+      speed: 2.2
       });
       canShoot = false;
       setTimeout(() => { canShoot = true; }, 300); 
@@ -1305,42 +1426,42 @@ function stopTimer() {
 
       function updateBullets() {
       for (let i = player.bullets.length - 1; i >= 0; i--) {
-        player.bullets[i].y -= player.bullets[i].speed;
-        if (player.bullets[i].y < 0) player.bullets.splice(i, 1);
+      player.bullets[i].y -= player.bullets[i].speed;
+      if (player.bullets[i].y < 0) player.bullets.splice(i, 1);
       }
       }
 
       function moveEnemies() {
       let hitEdge = false;
       for (const enemy of enemies) {
-        enemy.x += enemySpeed * enemyDirection;
-        if (enemy.x < 0 || enemy.x + enemy.width > canvas.width) hitEdge = true;
+      enemy.x += enemySpeed * enemyDirection;
+      if (enemy.x < 0 || enemy.x + enemy.width > canvas.width) hitEdge = true;
       }
       if (hitEdge) {
-        enemyDirection *= -1;
-        for (const enemy of enemies) {
-        enemy.y += 10;
-        }
+      enemyDirection *= -1;
+      for (const enemy of enemies) {
+      enemy.y += 10;
+      }
       }
       }
 
       function detectCollisions() {
       for (let b = player.bullets.length - 1; b >= 0; b--) {
-        for (let e = enemies.length - 1; e >= 0; e--) {
-        const bullet = player.bullets[b];
-        const enemy = enemies[e];
-        if (
-          bullet.x < enemy.x + enemy.width &&
-          bullet.x + bullet.width > enemy.x &&
-          bullet.y < enemy.y + enemy.height &&
-          bullet.y + bullet.height > enemy.y
-        ) {
-          player.bullets.splice(b, 1);
-          enemies.splice(e, 1);
-          initialEnemyPositions.splice(e, 1); // Eliminar la posición inicial correspondiente
-          break;
-        }
-        }
+      for (let e = enemies.length - 1; e >= 0; e--) {
+      const bullet = player.bullets[b];
+      const enemy = enemies[e];
+      if (
+        bullet.x < enemy.x + enemy.width &&
+        bullet.x + bullet.width > enemy.x &&
+        bullet.y < enemy.y + enemy.height &&
+        bullet.y + bullet.height > enemy.y
+      ) {
+        player.bullets.splice(b, 1);
+        enemies.splice(e, 1);
+        initialEnemyPositions.splice(e, 1); // Eliminar la posición inicial correspondiente
+        break;
+      }
+      }
       }
       }
 
@@ -1351,24 +1472,45 @@ function stopTimer() {
 
       function drawPlayer() {
       if (galaga.doctorImg && galaga.doctorImg.complete) {
-        ctx.drawImage(galaga.doctorImg, player.x, player.y, player.width, player.height);
+      ctx.drawImage(galaga.doctorImg, player.x, player.y, player.width, player.height);
       } else {
-        drawRect(player);
+      drawRect(player);
       }
       }
 
       function drawEnemy(enemy) {
       if (galaga.virusImg && galaga.virusImg.complete) {
-        ctx.drawImage(galaga.virusImg, enemy.x, enemy.y, enemy.width, enemy.height);
+      ctx.drawImage(galaga.virusImg, enemy.x, enemy.y, enemy.width, enemy.height);
       } else {
-        drawRect(enemy);
+      drawRect(enemy);
+      }
+      }
+      function drawBullet(bullet) {
+      const scale = 10;
+      const width = bullet.width * scale;
+      const height = bullet.height * scale;
+      if (
+        galaga.bulletImg &&
+        galaga.bulletImg.complete &&
+        galaga.bulletImg.naturalWidth !== 0
+      ) {
+        ctx.drawImage(
+      galaga.bulletImg,
+      bullet.x - (width - bullet.width) / 2,
+      bullet.y - (height - bullet.height) / 2,
+      width,
+      height
+        );
+      } else {
+        ctx.fillStyle = bullet.color;
+        ctx.fillRect(bullet.x, bullet.y, width, height);
       }
       }
 
       function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawPlayer();
-      player.bullets.forEach(drawRect);
+      player.bullets.forEach(drawBullet);
       enemies.forEach(drawEnemy);
       ctx.font = "16px 'Press Start 2P', cursive";
       ctx.fillStyle = "#fff";
@@ -1381,8 +1523,8 @@ function stopTimer() {
 
       function resetEnemiesToInitialPositions() {
       for (let i = 0; i < enemies.length; i++) {
-        enemies[i].x = initialEnemyPositions[i].x;
-        enemies[i].y = initialEnemyPositions[i].y;
+      enemies[i].x = initialEnemyPositions[i].x;
+      enemies[i].y = initialEnemyPositions[i].y;
       }
       enemyDirection = 1;
       }
@@ -1396,33 +1538,33 @@ function stopTimer() {
       draw();
 
       for (const enemy of enemies) {
-        if (enemy.y + enemy.height >= player.y) {
-        lives--;
-        if (lives > 0) {
-          resetEnemiesToInitialPositions();
-          player.x = canvas.width / 2 - 15;
-          player.bullets = [];
-          break;
-        } else {
-          lose = true;
-        }
-        }
+      if (enemy.y + enemy.height >= player.y) {
+      lives--;
+      if (lives > 0) {
+        resetEnemiesToInitialPositions();
+        player.x = canvas.width / 2 - 15;
+        player.bullets = [];
+        break;
+      } else {
+        lose = true;
+      }
+      }
       }
       if (lose) {
-        finished = true;
-        if (typeof mostrarModalTiempoAgotado === "function") {
-        juegoTerminadoPorTiempo = true;
-        setTimeout(() => {
-          mostrarModalTiempoAgotado(true);
-        }, 700);
-        }
-        endGame("lose");
-        return;
+      finished = true;
+      if (typeof mostrarModalTiempoAgotado === "function") {
+      juegoTerminadoPorTiempo = true;
+      setTimeout(() => {
+        mostrarModalTiempoAgotado(true);
+      }, 700);
+      }
+      endGame("lose");
+      return;
       }
       if (enemies.length === 0) {
-        finished = true;
-        endGame("win");
-        return;
+      finished = true;
+      endGame("win");
+      return;
       }
       requestAnimationFrame(gameLoop);
       }
@@ -1431,70 +1573,73 @@ function stopTimer() {
       document.removeEventListener('keydown', keyDownHandler);
       document.removeEventListener('keyup', keyUpHandler);
       setTimeout(() => {
-        overlay.remove();
-        if (typeof onFinish === "function") onFinish(result);
+      overlay.remove();
+      if (typeof onFinish === "function") onFinish(result);
       }, 700);
       }
-
       gameLoop();
     }
-
     // Unificado: mostrar minijuego aleatorio antes de la pregunta
     function mostrarMinijuegoAntesDePregunta(callback) {
+      // 30% de probabilidad de NO mostrar minijuego
+      if (Math.random() < 0.9) {
+        minijuegoEnCurso = false;
+        if (typeof callback === "function") callback("skip");
+        return;
+      }
       minijuegoEnCurso = true;
       const juegos = [
-      function(cb) {
-        let overlay = document.getElementById('minijuegoOverlay');
-        if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.id = 'minijuegoOverlay';
-        overlay.style.position = 'fixed';
-        overlay.style.top = 0;
-        overlay.style.left = 0;
-        overlay.style.width = '100vw';
-        overlay.style.height = '100vh';
-        overlay.style.background = 'rgba(0,0,0,0.95)';
-        overlay.style.zIndex = 10001;
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        document.body.appendChild(overlay);
+        function(cb) {
+          let overlay = document.getElementById('minijuegoOverlay');
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'minijuegoOverlay';
+            overlay.style.position = 'fixed';
+            overlay.style.top = 0;
+            overlay.style.left = 0;
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.background = 'rgba(0,0,0,0.95)';
+            overlay.style.zIndex = 10001;
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+            document.body.appendChild(overlay);
+          }
+          overlay.innerHTML = `
+          <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
+            <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
+            <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
+            <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
+          </div>
+          `;
+          overlay.style.display = 'flex';
+          entradaHabilitada = false;
+          minijuego(function(resultado) {
+            minijuegoEnCurso = false;
+            if (juegoTerminadoPorTiempo) {
+              if (overlay) overlay.remove();
+              return;
+            }
+            overlay.remove();
+            if (typeof cb === "function") cb(resultado);
+          });
+        },
+        function(cb) {
+          galaga(function(resultado) {
+            minijuegoEnCurso = false;
+            if (juegoTerminadoPorTiempo) {
+              let overlay = document.getElementById('galagaOverlay');
+              if (overlay) overlay.remove();
+              return;
+            }
+            if (typeof cb === "function") cb(resultado);
+          });
         }
-        overlay.innerHTML = `
-        <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
-          <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
-          <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
-          <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
-        </div>
-        `;
-        overlay.style.display = 'flex';
-        entradaHabilitada = false;
-        minijuego(function(resultado) {
-        minijuegoEnCurso = false;
-        if (juegoTerminadoPorTiempo) {
-          if (overlay) overlay.remove();
-          return;
-        }
-        overlay.remove();
-        if (typeof cb === "function") cb(resultado);
-        });
-      },
-      function(cb) {
-        galaga(function(resultado) {
-        minijuegoEnCurso = false;
-        if (juegoTerminadoPorTiempo) {
-          let overlay = document.getElementById('galagaOverlay');
-          if (overlay) overlay.remove();
-          return;
-        }
-        if (typeof cb === "function") cb(resultado);
-        });
-      }
       ];
       const idx = Math.floor(Math.random() * juegos.length);
       juegos[idx](callback);
     }
-
     // Sobrescribe mostrarModal para lanzar minijuego antes de mostrar la pregunta
     const originalMostrarModal = mostrarModal;
     mostrarModal = function(mensaje) {
@@ -1504,13 +1649,12 @@ function stopTimer() {
       if (juegoTerminadoPorTiempo) return;
       if (resultado === "lose") return;
       document.getElementById('modalMensaje').innerText = mensaje;
-      const preguntaID = Math.floor(Math.random() * 6) + 1;
+      const preguntaID = Math.floor(Math.random() * 21) + 1;
       mostrarPregunta(preguntaID);
       modal.show();
       entradaHabilitada = true;
       });
     };
-
     // Sobrescribe mostrarModalTiempoAgotado para marcar el juego como terminado
     const originalMostrarModalTiempoAgotado = mostrarModalTiempoAgotado;
     mostrarModalTiempoAgotado = function(superponer) {
@@ -1521,9 +1665,18 @@ function stopTimer() {
       if (galagaOverlay) galagaOverlay.remove();
       if (superponer) {
       setTimeout(() => {
-        let overlay = document.getElementById('modalTiempoOverlay');
-        if (overlay) overlay.style.zIndex = 10002;
+      let overlay = document.getElementById('modalTiempoOverlay');
+      if (overlay) overlay.style.zIndex = 10002;
       }, 10);
       }
       originalMostrarModalTiempoAgotado();
+    };
+
+    // Sobrescribe la función pausa para bloquearla si hay minijuego en curso
+    const originalPausa = pausa;
+    pausa = function() {
+      if (minijuegoEnCurso) {
+      return;
+      }
+      originalPausa();
     };
