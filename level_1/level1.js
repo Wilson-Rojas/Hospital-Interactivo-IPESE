@@ -1012,47 +1012,6 @@ function stopTimer() {
     let minijuegoEnCurso = false;
     let juegoTerminadoPorTiempo = false; // Para evitar sobrescribir el modal de tiempo agotado
 
-    function mostrarMinijuegoAntesDePregunta(callback) {
-      minijuegoEnCurso = true;
-      let overlay = document.getElementById('minijuegoOverlay');
-      if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.id = 'minijuegoOverlay';
-        overlay.style.position = 'fixed';
-        overlay.style.top = 0;
-        overlay.style.left = 0;
-        overlay.style.width = '100vw';
-        overlay.style.height = '100vh';
-        overlay.style.background = 'rgba(0,0,0,0.95)';
-        overlay.style.zIndex = 10001;
-        overlay.style.display = 'flex';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        document.body.appendChild(overlay);
-      }
-      overlay.innerHTML = `
-        <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
-          <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
-          <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
-          <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
-        </div>
-      `;
-      overlay.style.display = 'flex';
-      entradaHabilitada = false;
-
-      minijuego(function(resultado) {
-        minijuegoEnCurso = false;
-        // Si el modal de tiempo agotado está activo, superponerlo y quitar el minijuego
-        if (juegoTerminadoPorTiempo) {
-          if (overlay) overlay.remove();
-          return;
-        }
-        overlay.remove();
-        if (typeof callback === "function") callback(resultado);
-      });
-    }
-
-    // minijuego recibe un callback que se llama al ganar o perder
     function minijuego(onFinish) {
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
@@ -1207,11 +1166,9 @@ function stopTimer() {
               finished = true;
               cleanup();
               setTimeout(() => {
-                // Si el juego ya terminó por tiempo, no mostrar nada más
                 if (juegoTerminadoPorTiempo) return;
-                // Si pierdes las 3 vidas, mostrar el modal de tiempo agotado y superponerlo
                 juegoTerminadoPorTiempo = true;
-                mostrarModalTiempoAgotado(true); // true para indicar que debe superponerse
+                mostrarModalTiempoAgotado(true);
                 if (typeof onFinish === "function") onFinish("lose");
               }, 500);
             }
@@ -1240,55 +1197,333 @@ function stopTimer() {
       draw();
     }
 
+    // Galaga-style minigame with 3 attempts before losing, using virus and doctor sprites
+    function galaga(onFinish) {
+      let overlay = document.getElementById('galagaOverlay');
+      if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'galagaOverlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.background = 'rgba(0,0,0,0.95)';
+      overlay.style.zIndex = 10001;
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      document.body.appendChild(overlay);
+      }
+      overlay.innerHTML = `
+      <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
+        <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Elimina el virus!</h3>
+        <canvas id="galagaCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
+        <div id="galagaMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
+      </div>
+      `;
+      overlay.style.display = 'flex';
+
+      const canvas = document.getElementById("galagaCanvas");
+      const ctx = canvas.getContext("2d");
+
+      // Load doctor sprite for player
+      if (!galaga.doctorImg) {
+      galaga.doctorImg = new Image();
+      galaga.doctorImg.src = "../assets/entities/doctor/negra.png";
+      }
+      // Load virus sprite for enemies
+      if (!galaga.virusImg) {
+      galaga.virusImg = new Image();
+      galaga.virusImg.src = "../assets/entities/virus.png";
+      }
+
+      const player = {
+      x: canvas.width / 2 - 30,
+      y: canvas.height - 50,
+      width: 44,
+      height: 48,
+      color: 'white',
+      speed: 2,
+      bullets: []
+      };
+
+      const enemies = [];
+      const enemySize = 34;
+      const enemySpeed = 1;
+      const rows = 4, cols = 8;
+      let enemyDirection = 1;
+
+      // Guardar posiciones iniciales de los enemigos
+      const initialEnemyPositions = [];
+      for (let r = 0; r < rows; r++) {
+      for (let i = 0; i < cols; i++) {
+        const pos = {
+        x: i * (enemySize + 14) + 30,
+        y: r * (enemySize + 14) + 30
+        };
+        initialEnemyPositions.push({ ...pos });
+        enemies.push({
+        ...pos,
+        width: enemySize,
+        height: enemySize,
+        color: '#ff4444'
+        });
+      }
+      }
+
+      const keys = {};
+      function keyDownHandler(e) {
+      keys[e.key] = true;
+      if (e.key === ' ') shootBullet();
+      }
+      function keyUpHandler(e) {
+      keys[e.key] = false;
+      }
+      document.addEventListener('keydown', keyDownHandler);
+      document.addEventListener('keyup', keyUpHandler);
+
+      let canShoot = true;
+      function shootBullet() {
+      if (!canShoot) return;
+      player.bullets.push({
+        x: player.x + player.width / 2 - 2.5,
+        y: player.y,
+        width: 5,
+        height: 10,
+        color: '#ffff00',
+        speed: 3
+      });
+      canShoot = false;
+      setTimeout(() => { canShoot = true; }, 300); 
+      }
+
+      function movePlayer() {
+      if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+      if (keys['ArrowRight'] && player.x + player.width < canvas.width) player.x += player.speed;
+      }
+
+      function updateBullets() {
+      for (let i = player.bullets.length - 1; i >= 0; i--) {
+        player.bullets[i].y -= player.bullets[i].speed;
+        if (player.bullets[i].y < 0) player.bullets.splice(i, 1);
+      }
+      }
+
+      function moveEnemies() {
+      let hitEdge = false;
+      for (const enemy of enemies) {
+        enemy.x += enemySpeed * enemyDirection;
+        if (enemy.x < 0 || enemy.x + enemy.width > canvas.width) hitEdge = true;
+      }
+      if (hitEdge) {
+        enemyDirection *= -1;
+        for (const enemy of enemies) {
+        enemy.y += 10;
+        }
+      }
+      }
+
+      function detectCollisions() {
+      for (let b = player.bullets.length - 1; b >= 0; b--) {
+        for (let e = enemies.length - 1; e >= 0; e--) {
+        const bullet = player.bullets[b];
+        const enemy = enemies[e];
+        if (
+          bullet.x < enemy.x + enemy.width &&
+          bullet.x + bullet.width > enemy.x &&
+          bullet.y < enemy.y + enemy.height &&
+          bullet.y + bullet.height > enemy.y
+        ) {
+          player.bullets.splice(b, 1);
+          enemies.splice(e, 1);
+          initialEnemyPositions.splice(e, 1); // Eliminar la posición inicial correspondiente
+          break;
+        }
+        }
+      }
+      }
+
+      function drawRect(obj) {
+      ctx.fillStyle = obj.color;
+      ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+      }
+
+      function drawPlayer() {
+      if (galaga.doctorImg && galaga.doctorImg.complete) {
+        ctx.drawImage(galaga.doctorImg, player.x, player.y, player.width, player.height);
+      } else {
+        drawRect(player);
+      }
+      }
+
+      function drawEnemy(enemy) {
+      if (galaga.virusImg && galaga.virusImg.complete) {
+        ctx.drawImage(galaga.virusImg, enemy.x, enemy.y, enemy.width, enemy.height);
+      } else {
+        drawRect(enemy);
+      }
+      }
+
+      function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPlayer();
+      player.bullets.forEach(drawRect);
+      enemies.forEach(drawEnemy);
+      ctx.font = "16px 'Press Start 2P', cursive";
+      ctx.fillStyle = "#fff";
+      ctx.fillText("life: " + lives, 350, 30);
+      }
+
+      let finished = false;
+      let lives = 3;
+      let lose = false;
+
+      function resetEnemiesToInitialPositions() {
+      for (let i = 0; i < enemies.length; i++) {
+        enemies[i].x = initialEnemyPositions[i].x;
+        enemies[i].y = initialEnemyPositions[i].y;
+      }
+      enemyDirection = 1;
+      }
+
+      function gameLoop() {
+      if (finished) return;
+      movePlayer();
+      updateBullets();
+      moveEnemies();
+      detectCollisions();
+      draw();
+
+      for (const enemy of enemies) {
+        if (enemy.y + enemy.height >= player.y) {
+        lives--;
+        if (lives > 0) {
+          resetEnemiesToInitialPositions();
+          player.x = canvas.width / 2 - 15;
+          player.bullets = [];
+          break;
+        } else {
+          lose = true;
+        }
+        }
+      }
+      if (lose) {
+        finished = true;
+        if (typeof mostrarModalTiempoAgotado === "function") {
+        juegoTerminadoPorTiempo = true;
+        setTimeout(() => {
+          mostrarModalTiempoAgotado(true);
+        }, 700);
+        }
+        endGame("lose");
+        return;
+      }
+      if (enemies.length === 0) {
+        finished = true;
+        endGame("win");
+        return;
+      }
+      requestAnimationFrame(gameLoop);
+      }
+
+      function endGame(result) {
+      document.removeEventListener('keydown', keyDownHandler);
+      document.removeEventListener('keyup', keyUpHandler);
+      setTimeout(() => {
+        overlay.remove();
+        if (typeof onFinish === "function") onFinish(result);
+      }, 700);
+      }
+
+      gameLoop();
+    }
+
+    // Unificado: mostrar minijuego aleatorio antes de la pregunta
+    function mostrarMinijuegoAntesDePregunta(callback) {
+      minijuegoEnCurso = true;
+      const juegos = [
+      function(cb) {
+        let overlay = document.getElementById('minijuegoOverlay');
+        if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'minijuegoOverlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = 0;
+        overlay.style.left = 0;
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.background = 'rgba(0,0,0,0.95)';
+        overlay.style.zIndex = 10001;
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        document.body.appendChild(overlay);
+        }
+        overlay.innerHTML = `
+        <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
+          <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
+          <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
+          <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
+        </div>
+        `;
+        overlay.style.display = 'flex';
+        entradaHabilitada = false;
+        minijuego(function(resultado) {
+        minijuegoEnCurso = false;
+        if (juegoTerminadoPorTiempo) {
+          if (overlay) overlay.remove();
+          return;
+        }
+        overlay.remove();
+        if (typeof cb === "function") cb(resultado);
+        });
+      },
+      function(cb) {
+        galaga(function(resultado) {
+        minijuegoEnCurso = false;
+        if (juegoTerminadoPorTiempo) {
+          let overlay = document.getElementById('galagaOverlay');
+          if (overlay) overlay.remove();
+          return;
+        }
+        if (typeof cb === "function") cb(resultado);
+        });
+      }
+      ];
+      const idx = Math.floor(Math.random() * juegos.length);
+      juegos[idx](callback);
+    }
+
     // Sobrescribe mostrarModal para lanzar minijuego antes de mostrar la pregunta
     const originalMostrarModal = mostrarModal;
     mostrarModal = function(mensaje) {
-      // Si el juego terminó por tiempo, no mostrar nada
       if (juegoTerminadoPorTiempo) return;
       entradaHabilitada = false;
-      // 50% de probabilidad de mostrar el minijuego
-      if (Math.random() < 0.5) {
-        // Lanzar minijuego primero
-        mostrarMinijuegoAntesDePregunta((resultado) => {
-          // Si el juego terminó por tiempo durante el minijuego, no mostrar la pregunta
-          if (juegoTerminadoPorTiempo) return;
-          // Si perdió el minijuego, no mostrar la pregunta
-          if (resultado === "lose") return;
-          // Cuando termine el minijuego y gane, mostrar la pregunta
-          document.getElementById('modalMensaje').innerText = mensaje;
-          const preguntaID = Math.floor(Math.random() * 5) + 1;
-          mostrarPregunta(preguntaID);
-          modal.show();
-          entradaHabilitada = true;
-        });
-      } else {
-        // No mostrar minijuego, mostrar la pregunta directamente
-        document.getElementById('modalMensaje').innerText = mensaje;
-        const preguntaID = Math.floor(Math.random() * 5) + 1;
-        mostrarPregunta(preguntaID);
-        modal.show();
-        entradaHabilitada = true;
-      }
+      mostrarMinijuegoAntesDePregunta((resultado) => {
+      if (juegoTerminadoPorTiempo) return;
+      if (resultado === "lose") return;
+      document.getElementById('modalMensaje').innerText = mensaje;
+      const preguntaID = Math.floor(Math.random() * 6) + 1;
+      mostrarPregunta(preguntaID);
+      modal.show();
+      entradaHabilitada = true;
+      });
     };
 
     // Sobrescribe mostrarModalTiempoAgotado para marcar el juego como terminado
     const originalMostrarModalTiempoAgotado = mostrarModalTiempoAgotado;
     mostrarModalTiempoAgotado = function(superponer) {
       juegoTerminadoPorTiempo = true;
-      // Si hay overlay del minijuego, ciérralo antes de mostrar el modal de tiempo agotado
       let minijuegoOverlay = document.getElementById('minijuegoOverlay');
-      if (minijuegoOverlay) {
-        minijuegoOverlay.remove();
-      }
-      // Si hay que superponer, asegura el z-index
+      if (minijuegoOverlay) minijuegoOverlay.remove();
+      let galagaOverlay = document.getElementById('galagaOverlay');
+      if (galagaOverlay) galagaOverlay.remove();
       if (superponer) {
-        setTimeout(() => {
-          let overlay = document.getElementById('modalTiempoOverlay');
-          if (overlay) {
-            overlay.style.zIndex = 10002;
-          }
-        }, 10);
+      setTimeout(() => {
+        let overlay = document.getElementById('modalTiempoOverlay');
+        if (overlay) overlay.style.zIndex = 10002;
+      }, 10);
       }
       originalMostrarModalTiempoAgotado();
     };
-
