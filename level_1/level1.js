@@ -611,6 +611,8 @@ function habilitar_Movimiento(){
   entradaHabilitada = true; // Reactivar entrada
 }
 
+let preguntasRespondidas = new Set();
+
 function mostrarPregunta(numero) {
   contenedor.innerHTML = ""; // limpiar anterior
   let pregunta = "";
@@ -677,7 +679,7 @@ function mostrarPregunta(numero) {
       respuestaCorrecta = "Corazón";
       break;
     case 13:
-      pregunta = "¿Qué significa 'ICU' en un hospital?";
+      pregunta = "¿Qué significa 'UCI' en un hospital?";
       opciones = ["Unidad de Cuidados Intensivos", "Unidad Clínica Única", "Inyección Cardiaca Urgente"];
       respuestaCorrecta = "Unidad de Cuidados Intensivos";
       break;
@@ -708,19 +710,59 @@ function mostrarPregunta(numero) {
       break;
     case 19:
       pregunta = "¿Qué hacer si una persona se desmaya?";
-      opciones = ["Acostarla y elevar las piernas", "Darle un vaso de agua de inmediato", "Sentarla rápidamente"];
+      opciones = ["Darle un vaso de agua de inmediato", "Sentarla rápidamente", "Acostarla y elevar las piernas"];
       respuestaCorrecta = "Acostarla y elevar las piernas";
       break;
     case 20:
       pregunta = "¿Qué hacer si una persona presenta signos de accidente cerebrovascular?";
-      opciones = ["Llamar a emergencias inmediatamente", "Esperar a ver si mejora", "Darle aspirina sin consultar"];
+      opciones = ["Esperar a ver si mejora", "Llamar a emergencias inmediatamente", "Darle aspirina sin consultar"];
       respuestaCorrecta = "Llamar a emergencias inmediatamente";
       break;
     case 21:
       pregunta = "Según IPS, ¿si se rompe la pierna izquierda qué se hace?";
-      opciones = ["Cortar la derecha", "No atenderle", "Darle dolanet y espere"];
-      respuestaCorrecta = opciones;
+      opciones = ["Cortar la derecha", "No atenderle", "Darle dolanet y espere","Todas son correctas"];
+      respuestaCorrecta = "Todas son correctas";
       break;
+  }
+
+  // Si la pregunta ya fue respondida, buscar otra disponible
+  if (preguntasRespondidas.has(numero)) {
+    // Buscar una pregunta no respondida
+    let disponibles = [];
+    for (let i = 1; i <= 21; i++) {
+      if (!preguntasRespondidas.has(i)) disponibles.push(i);
+    }
+    if (disponibles.length === 0) {
+      contenedor.innerHTML = "<div style='color:green;font-weight:bold;'>¡Ya respondiste todas las preguntas!</div>";
+      return;
+    }
+    // Elegir una pregunta aleatoria disponible que no sea la actual
+    let nuevoNumero;
+    if (disponibles.length === 1) {
+      nuevoNumero = disponibles[0];
+    } else {
+      do {
+        nuevoNumero = disponibles[Math.floor(Math.random() * disponibles.length)];
+      } while (nuevoNumero === numero && disponibles.length > 1);
+    }
+    mostrarPregunta(nuevoNumero);
+    return;
+  }
+
+  // Mezclar las opciones de respuesta
+  function mezclar(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+  const opcionesMezcladas = mezclar([...opciones]);
+
+  // Si la respuesta correcta es un array (caso especial), actualizarla según el orden mezclado
+  let respuestaCorrectaMezclada = respuestaCorrecta;
+  if (Array.isArray(respuestaCorrecta)) {
+    respuestaCorrectaMezclada = opcionesMezcladas;
   }
 
   // Estilos para simular un anotador
@@ -768,7 +810,7 @@ function mostrarPregunta(numero) {
     <div style="width:10px;height:10px;border-radius:50%;background:#b8b8b8;"></div>
   </div>`;
 
-  const htmlOpciones = opciones.map((op, i) => `
+  const htmlOpciones = opcionesMezcladas.map((op, i) => `
     <div style="margin-bottom: 10px;">
       <label style="display:flex;align-items:center;font-size:1.08em;color:#111;">
         <input class="opciones_pregunta" type="radio" name="respuesta" value="${op}" id="opcion${i}" style="margin-right:8px; accent-color:#e0c97f;">
@@ -776,6 +818,11 @@ function mostrarPregunta(numero) {
       </label>
     </div>
   `).join("");
+  // Actualizar la variable global de respuestaCorrecta
+  respuestaCorrecta = respuestaCorrectaMezclada;
+
+  // Registrar la pregunta como respondida para evitar que se repita
+  preguntasRespondidas.add(numero);
 
   contenedor.innerHTML = `
     <div style="${rayasStyle}">
@@ -785,11 +832,48 @@ function mostrarPregunta(numero) {
         <div>
           ${htmlOpciones}
         </div>
-        <button onclick="Responder()" style="margin-top:10px;background:#e0c97f;color:#6d4c00;border:none;padding:8px 18px;border-radius:6px;font-weight:bold;box-shadow:0 2px 6px #e0c97f44;cursor:pointer;">Enviar</button>
+        <button onclick="Responder(${numero})" style="margin-top:10px;background:#e0c97f;color:#6d4c00;border:none;padding:8px 18px;border-radius:6px;font-weight:bold;box-shadow:0 2px 6px #e0c97f44;cursor:pointer;">Enviar</button>
       </div>
     </div>
   `;
 }
+
+// Modificar Responder para registrar la pregunta respondida
+const ResponderOriginal = Responder;
+Responder = function(numero) {
+  try {
+    const respuestaUsuario = document.querySelector('input[name="respuesta"]:checked')?.value;
+    if (respuestaUsuario == undefined) {
+      respuestaContainer.innerHTML = '<span style="color:orange;font-weight:bold;">Por favor selecciona una respuesta</span>';
+      return
+    }
+    if (respuestaUsuario === respuestaCorrecta) {
+      if (numero) preguntasRespondidas.add(numero);
+      respuestaContainer.innerHTML = '<span style="color:green;font-weight:bold;">¡Respuesta correcta!</span>';
+      contenedor.innerHTML = ""; // limpiar anterior
+      for (const entity of entities) {
+        if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
+          const dx = Math.abs(doctor.x - entity.x);
+          const dy = Math.abs(doctor.y - entity.y);
+          if (dx + dy === 1) {
+            entity.patientStatus = "treated";
+            break;
+          }
+        }
+      }
+      drawScene(document.getElementById("game-canvas").getContext("2d"));
+      setTimeout(() =>{
+        habilitar_Movimiento();
+        modal.hide()
+      },2500);
+    } else {
+      respuestaContainer.innerHTML = '<span style="color:red;font-weight:bold;">Respuesta incorrecta.</span>';
+    }
+  } catch (error) {
+    console.error("Error al procesar la respuesta:", error);
+    alert("Ocurrió un error al enviar la respuesta.");
+  }
+};
 
 function Responder() {
   try {
@@ -1582,7 +1666,7 @@ function stopTimer() {
     // Unificado: mostrar minijuego aleatorio antes de la pregunta
     function mostrarMinijuegoAntesDePregunta(callback) {
       // 30% de probabilidad de NO mostrar minijuego
-      if (Math.random() < 0.9) {
+      if (Math.random() < 0.5) {
         minijuegoEnCurso = false;
         if (typeof callback === "function") callback("skip");
         return;
@@ -1608,7 +1692,7 @@ function stopTimer() {
           }
           overlay.innerHTML = `
           <div style="background:#111;border:3px solid #00ffff;box-shadow:0 0 20px #00ffff;padding:24px 24px 8px 24px;border-radius:16px;text-align:center;">
-            <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">¡Minijuego!</h3>
+            <h3 style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-bottom:10px;">HORA DE VACUNAR!</h3>
             <canvas id="myCanvas" width="480" height="320" style="background:#222;display:block;margin:0 auto;border:2px solid #00ffff;"></canvas>
             <div id="minijuegoMsg" style="color:#00ffff;font-family:'Press Start 2P',cursive;margin-top:10px;"></div>
           </div>
