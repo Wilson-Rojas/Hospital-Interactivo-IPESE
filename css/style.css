@@ -98,135 +98,231 @@ body {
 }
 
 /* ===== ESTILOS GENERALES DE BOTONES DE NIVEL ===== */
-#level-select button {
-  margin: 10px; /* Espaciado entre botones */
-  padding: 30px 40px; /* Relleno interno generoso */
-  border: none;
-  border-radius: 10px; /* Bordes redondeados */
-  cursor: pointer; /* Cursor de mano al pasar por encima */
-  animation: floatArcade 3s ease-in-out infinite; /* Animación flotante */
-}
-
-/* ===== BOTÓN NIVEL FÁCIL ===== */
-.easy {
-  /* Gradiente verde suave para nivel fácil */
-  background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
-  color: #ffffff; /* Texto blanco */
-  border: 3px solid #ffffff; /* Borde blanco */
+.Controles,
+.Creadores,
+.show-menu-btn {
+  min-width: 260px;
+  min-height: 60px;
+  background: linear-gradient(90deg, #232526 0%, #414345 100%);
+  color: #00e676;
+  border: 3px solid #00e676;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
   font-weight: bold;
-  font-size: 20px;
-  letter-spacing: 2px; /* Espaciado entre letras estilo arcade */
-  /* Sombras para efecto 3D */
-  box-shadow: 0 4px #2e7d32, 0 8px 16px #0008;
-  text-shadow: 1px 1px 2px #000, 0 0 8px #ffffff; /* Brillo en el texto */
+  letter-spacing: 2px;
+  padding: 18px 36px;
+  border-radius: 10px;
+  box-shadow: 0 4px #00e676, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #00e676;
   position: relative;
-  overflow: hidden; /* Para efectos internos */
-  transition: transform 0.1s, box-shadow 0.1s; /* Transiciones suaves */
+  overflow: hidden;
+  cursor: pointer;
+  margin: 10px;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+  animation: floatArcade 3s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  align-self: center; 
+  justify-self: center;
 }
 
-/* Etiqueta "FÁCIL" en la esquina del botón */
-.easy::after {
-  content: "FÁCIL";
-  position: absolute;
-  top: 6px;
-  right: 10px;
-  font-size: 12px;
+.Creadores {
+  background: linear-gradient(90deg, #7c3aed 0%, #00b4d8 100%);
   color: #fff;
-  background: #388e3c; /* Verde oscuro */
-  padding: 2px 8px;
+  border: 3px solid #fff;
+  box-shadow: 0 4px #7c3aed, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #fff;
+  gap: 10px;
+}
+
+.show-menu-btn {
+  background: linear-gradient(90deg, #ffeb3b 0%, #ff9800 100%);
+  color: #ffffff;
+  border: 3px solid #fffde7;
+  box-shadow: 0 4px #ff9800, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000000, 0 0 8px #050501;
+  gap: 0;
+}
+.Controles:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px #00e676, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #414345 0%, #232526 100%);
+}
+.Creadores:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px #7c3aed, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #00b4d8 0%, #7c3aed 100%);
+}
+.show-menu-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px #ff9800, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #ff9800 0%, #ffeb3b 100%);
+}
+#level-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Menos separación */
+}
+#level-select button {
+  margin: 6px 0;
+  padding: 18px 25px; /* 10% más chico */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  animation: floatArcade 3s ease-in-out infinite;
+  width: 100%;
+  max-width: 216px; /* 10% más chico */
+  min-width: 216px;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13.5px; /* 10% más chico */
+  font-weight: bold;
+  letter-spacing: 2px;
+  box-shadow: 0 4px 0, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #fff;
+  position: relative;
+  overflow: hidden;
+  gap: 8px;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+  align-self: center;
+  justify-self: center;
+}
+/* ===== BOTÓN NIVEL FÁCIL ===== */
+.easy,
+.normal,
+.hard,
+.back1 {
+  min-width: 216px;
+  max-width: 216px;
+  min-height: 54px;
+  font-size: 13.5px;
+}
+.easy {
+  background: linear-gradient(90deg, #43ea4c 0%, #00b894 100%);
+  color: #090101;
+  border: 3px solid #000000;
+  box-shadow: 0 4px #43ea4c, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #000000;
+}
+.easy::after {
+  content: "LV1";
+  position: absolute;
+  top: 3px;
+  right: 7px;
+  font-size: 7px; /* 10% más chico */
+  color: #fff;
+  background: #00b894;
+  padding: 1px 5px;
   border-radius: 6px;
   font-family: 'Press Start 2P', monospace;
-  box-shadow: 0 2px #2e7d32; /* Sombra de la etiqueta */
-  pointer-events: none; /* No interfiere con clics */
+  box-shadow: 0 2px #43ea4c;
+  pointer-events: none;
+  height: 14px;
+  display: flex;
+  align-items: center;
 }
-
-/* Efecto hover para botón fácil */
 .easy:hover {
-  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
-  box-shadow: 0 8px #2e7d32, 0 12px 24px #000a; /* Sombras más pronunciadas */
-  background: linear-gradient(90deg, #8bc34a 0%, #4caf50 100%); /* Gradiente invertido */
+  transform: scale(1.05);
+  box-shadow: 0 8px #43ea4c, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #00b894 0%, #43ea4c 100%);
 }
-
 /* ===== BOTÓN NIVEL NORMAL ===== */
 .normal {
-  /* Gradiente azul-verde para nivel normal */
-  background: linear-gradient(90deg, #2979ff 0%, #00e676 100%);
-  color: #fffde7; /* Texto amarillo claro */
-  border: 3px solid #fffde7; /* Borde amarillo claro */
-  font-weight: bold;
-  font-size: 20px;
-  letter-spacing: 2px; /* Espaciado entre letras estilo arcade */
-  /* Sombras para efecto 3D */
-  box-shadow: 0 4px #1565c0, 0 8px 16px #0008;
-  text-shadow: 1px 1px 2px #000, 0 0 8px #fffde7; /* Brillo en el texto */
-  position: relative;
-  overflow: hidden; /* Para efectos internos */
-  transition: transform 0.1s, box-shadow 0.1s; /* Transiciones suaves */
+  background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+  color: #222;
+  border: 3px solid #fff;
+  box-shadow: 0 4px #ffd600, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #fff;
 }
-
-/* Etiqueta "NORMAL" en la esquina del botón */
 .normal::after {
-  content: "NORMAL";
+  content: "LV2";
   position: absolute;
-  top: 6px;
-  right: 10px;
-  font-size: 12px;
-  color: #fff;
-  background: #00bfae; /* Azul verdoso */
-  padding: 2px 8px;
-  border-radius: 6px;
+  top: 3px;
+  right: 6px;
+  font-size: 7px; /* 10% más chico */
+  color: #f0eeee;
+  background: #ffd600;
+  padding: 1px 3px;
+  border-radius: 4px;
   font-family: 'Press Start 2P', monospace;
-  box-shadow: 0 2px #1565c0; /* Sombra de la etiqueta */
-  pointer-events: none; /* No interfiere con clics */
+  box-shadow: 0 2px #000000;
+  pointer-events: none;
+  height: 9px;
+  display: flex;
+  align-items: center;
 }
-
-/* Efecto hover para botón normal */
 .normal:hover {
-  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
-  box-shadow: 0 8px #1565c0, 0 12px 24px #000a; /* Sombras más pronunciadas */
-  background: linear-gradient(90deg, #00e676 0%, #2979ff 100%); /* Gradiente invertido */
+  transform: scale(1.05);
+  box-shadow: 0 8px #ffd600, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
 }
-
 /* ===== BOTÓN NIVEL DIFÍCIL ===== */
 .hard {
-  /* Gradiente rojo-naranja para nivel difícil */
   background: linear-gradient(90deg, #ff1744 0%, #ff9100 100%);
-  color: #fff700; /* Texto amarillo brillante */
-  border: 3px solid #fff700; /* Borde amarillo brillante */
-  font-weight: bold;
-  font-size: 20px;
-  letter-spacing: 2px; /* Espaciado entre letras estilo arcade */
-  /* Sombras para efecto 3D */
-  box-shadow: 0 4px #b71c1c, 0 8px 16px #0008;
-  text-shadow: 1px 1px 2px #000, 0 0 8px #fff700; /* Brillo en el texto */
-  position: relative;
-  overflow: hidden; /* Para efectos internos */
-  transition: transform 0.1s, box-shadow 0.1s; /* Transiciones suaves */
+  color: #0d0000;
+  border: 3px solid #fff;
+  box-shadow: 0 4px #ff1744, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #000000;
 }
-
-/* Etiqueta "DIFÍCIL" en la esquina del botón */
 .hard::after {
-  content: "DIFÍCIL";
+  content: "LV3";
   position: absolute;
-  top: 6px;
-  right: 10px;
-  font-size: 12px;
-  color: #fff;
-  background: #d50000; /* Rojo intenso */
-  padding: 2px 8px;
+  top: 2px;
+  right: 3px;
+  font-size: 7px; /* 10% más chico */
+  color: #ffffff;
+  background: #ff1744;
+  padding: 1px 5px;
   border-radius: 6px;
   font-family: 'Press Start 2P', monospace;
-  box-shadow: 0 2px #b71c1c; /* Sombra de la etiqueta */
-  pointer-events: none; /* No interfiere con clics */
+  box-shadow: 0 2px #321d01;
+  pointer-events: none;
+  height: 16px;
+  display: flex;
+  align-items: center;
 }
-
-/* Efecto hover para botón difícil */
 .hard:hover {
-  transform: scale(1.05); /* Aumenta ligeramente el tamaño */
-  box-shadow: 0 8px #b71c1c, 0 12px 24px #000a; /* Sombras más pronunciadas */
-  background: linear-gradient(90deg, #ff9100 0%, #ff1744 100%); /* Gradiente invertido */
+  transform: scale(1.05);
+  box-shadow: 0 8px #ff1744, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #ff9100 0%, #ff1744 100%);
 }
-
+.back1 {
+  background: linear-gradient(90deg, #7a035c 0%, #ea00ff 100%);
+  color: #020000;
+  border: 3px solid #650241;
+  box-shadow: 0 4px #b617ff, 0 8px 16px #0008;
+  text-shadow: 1px 1px 2px #000, 0 0 8px #41034f;
+}
+.back1::after {
+  content: "Atrás";
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  font-size: 7px; /* 10% más chico */
+  color: #fff;
+  background: #ff17e8;
+  padding: 1px 4px;
+  border-radius: 5px;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 2px #000000;
+  pointer-events: none;
+  height: 16px;
+  display: flex;
+  align-items: center;
+}
+.back1:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px #d817ff, 0 12px 24px #000a;
+  background: linear-gradient(90deg, #ee00ff 0%, #e017ff 100%);
+}
 /* Etiqueta de en la esquina de los niveles */
 .button_back {
   /* Fondo retro con gradiente púrpura-azul */
@@ -248,20 +344,16 @@ body {
   transition: transform 0.1s, box-shadow 0.1s;
   animation: floatArcade 3s ease-in-out infinite;
 }
-
 /* Efecto hover retro */
 .button_back:hover {
   transform: scale(1.05);
   box-shadow: 0 8px #3a0ca3, 0 12px 24px #000a;
   background: linear-gradient(90deg, #00b4d8 0%, #7c3aed 100%);
 }
-
-
 /* ===== EFECTO HOVER GENERAL (HEREDADO) ===== */
 #level-select button:hover {
   background-color: #004d40; /* Color de fondo alternativo (puede ser sobrescrito) */
 }
-
 /* ===== ANIMACIÓN DE PARPADEO ===== */
 @keyframes blink {
   0%, 50% { opacity: 1; } /* Visible */

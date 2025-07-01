@@ -248,3 +248,152 @@ function drawPixelMachine(ctx, x, y, machineType) {
     ctx.fillRect(x + 14, y + 27, 1, 1);
   }
 }
+
+function mostrarMenu() {
+  document.getElementById('main-menu').style.display = 'none';
+  document.getElementById('menu').style.display = 'block';
+  document.getElementById('titulo').style.display = 'block';
+  document.getElementById('subtitulo').style.display = 'block';
+}
+
+function volverAlMenuPrincipal() {
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('main-menu').style.display = 'block';
+}
+
+function mostrarControles() {
+  // Muestra una imagen de controles en un overlay o div
+  let overlay = document.getElementById('controles-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'controles-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.background = 'rgba(0,0,0,0.7)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.zIndex = '9999';
+
+    const img = document.createElement('img');
+    img.src = 'assets/entities/controles.png'; 
+    img.alt = 'Controles del juego'; // Texto descriptivo para accesibilidad
+    img.style.maxWidth = '80vw';
+    img.style.maxHeight = '80vh';
+    img.style.boxShadow = '0 0 20px #000';
+
+    // Cerrar al hacer click fuera de la imagen
+        // Cerrar al hacer click fuera de la imagen
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) {
+            overlay.remove();
+          }
+        });
+    
+        overlay.appendChild(img);
+        document.body.appendChild(overlay);
+      }
+    }
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
+
+    function mostrarCreadores() {
+      let overlay = document.getElementById('creadores-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'creadores-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.background = 'rgba(0,0,0,0.7)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.zIndex = '9999';
+
+        
+        const img = document.createElement('img');
+        img.src = 'assets/entities/creadores.png';
+        img.alt = 'Creadores';
+        img.style.position = 'absolute';
+        img.style.top = '50%';
+        img.style.left = '50%';
+        img.style.transform = 'translate(-50%, -50%)';
+        img.style.maxWidth = '70vw';
+        img.style.maxHeight = '100vh'; // Más alta
+        img.style.width = '80vw';
+        img.style.height = 'auto';
+        img.style.zIndex = '1';
+        img.style.boxShadow = '0 0 20px #000';
+
+        img.addEventListener('click', function() {
+          overlay.remove();
+        });
+
+        const modal = document.createElement('div');
+        modal.style.background = 'rgba(255,255,255,0.35)';
+        modal.style.padding = '10px 10px';
+        modal.style.borderRadius = '8px';
+        modal.style.boxShadow = '0 0 10px #000';
+        modal.style.textAlign = 'center';
+        modal.style.fontFamily = "'Press Start 2P', 'VT323', 'Courier New', monospace";
+        modal.style.fontSize = '0.85em';
+        modal.style.letterSpacing = '1px';
+        modal.style.border = '2px solid #222';
+        modal.style.imageRendering = 'pixelated';
+        modal.style.maxWidth = '20vw';
+        modal.style.position = 'relative';
+        modal.style.zIndex = '2';
+
+        modal.innerHTML = `
+          <h2 style="
+            margin-bottom:10px;
+            font-size:1.2em;
+            color:#2E5984;
+            text-shadow:1px 1px 0 #fff, 2px 2px 0 #357ABD;
+            font-family:'Press Start 2P','VT323','Courier New',monospace;
+            letter-spacing:2px;
+            image-rendering:pixelated;
+          ">Creadores</h2>
+          <div style="
+            margin-bottom:12px;
+            font-size:0.9em;
+            color:#444;
+            font-family:'Press Start 2P','VT323','Courier New',monospace;
+            text-shadow:1px 1px 0 #fff, 1px 1px 0 #4A90E2;
+            image-rendering:pixelated;
+          ">
+            Alumnos de Ing. Informática 4to año
+          </div>
+          <ul style="
+            list-style:none;
+            padding:0;
+            margin:0;
+            font-size:1em;
+            color:#222;
+            text-shadow:1px 1px 0 #fff, 1px 1px 0 #4A90E2;
+            font-family:'Press Start 2P','VT323','Courier New',monospace;
+            image-rendering:pixelated;
+            text-align:left;
+            display:inline-block;
+          ">
+            <li style="margin-bottom:2px;"><span style="margin-right:4px;">&#9794;</span> Fernando Ayala</li>
+            <li style="margin-bottom:2px;"><span style="margin-right:4px;">&#9794;</span> Ricardo Montiel</li>
+            <li style="margin-bottom:2px;"><span style="margin-right:4px;">&#9794;</span> Wilson Rojas</li>
+            <li><span style="margin-right:2px;">&#9794;</span> Ulises Villalva</li>
+          </ul>
+        `;
+        modal.addEventListener('click', function() {
+          overlay.remove();
+        });
+
+        overlay.appendChild(img);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+      }
+    }
