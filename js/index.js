@@ -278,27 +278,61 @@ function mostrarControles() {
     overlay.style.justifyContent = 'center';
     overlay.style.zIndex = '9999';
 
+    // Marco contenedor
+    const marco = document.createElement('div');
+    marco.style.background = 'rgba(255,255,255,0.95)';
+    marco.style.border = '8px solid #2E5984';
+    marco.style.boxShadow = '0 0 30px #000, 0 0 0 4px #4A90E2 inset';
+    marco.style.borderRadius = '18px';
+    marco.style.padding = '18px 18px 12px 18px';
+    marco.style.display = 'flex';
+    marco.style.flexDirection = 'column';
+    marco.style.alignItems = 'center';
+    marco.style.position = 'relative';
+    marco.style.imageRendering = 'pixelated';
+
     const img = document.createElement('img');
     img.src = 'assets/entities/controles.png'; 
     img.alt = 'Controles del juego'; // Texto descriptivo para accesibilidad
-    img.style.maxWidth = '80vw';
-    img.style.maxHeight = '80vh';
-    img.style.boxShadow = '0 0 20px #000';
+    img.style.maxWidth = '70vw';
+    img.style.maxHeight = '60vh';
+    img.style.boxShadow = '0 0 20px #357ABD';
+    img.style.borderRadius = '10px';
+    img.style.imageRendering = 'pixelated';
 
-    // Cerrar al hacer click fuera de la imagen
-        // Cerrar al hacer click fuera de la imagen
-        overlay.addEventListener('click', function(e) {
-          if (e.target === overlay) {
-            overlay.remove();
-          }
-        });
-    
-        overlay.appendChild(img);
-        document.body.appendChild(overlay);
+    // Botón de cerrar
+    const btnCerrar = document.createElement('button');
+    btnCerrar.textContent = 'Cerrar';
+    btnCerrar.style.marginTop = '16px';
+    btnCerrar.style.padding = '6px 18px';
+    btnCerrar.style.fontFamily = "'Press Start 2P', 'VT323', 'Courier New', monospace";
+    btnCerrar.style.fontSize = '1em';
+    btnCerrar.style.background = '#2E5984';
+    btnCerrar.style.color = '#fff';
+    btnCerrar.style.border = '2px solid #357ABD';
+    btnCerrar.style.borderRadius = '6px';
+    btnCerrar.style.cursor = 'pointer';
+    btnCerrar.style.boxShadow = '0 2px 8px #357ABD';
+    btnCerrar.style.letterSpacing = '1px';
+    btnCerrar.style.imageRendering = 'pixelated';
+
+    btnCerrar.addEventListener('click', function() {
+      overlay.remove();
+    });
+
+    // Cerrar al hacer click fuera del marco
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        overlay.remove();
       }
-    }
-    overlay.appendChild(img);
+    });
+
+    marco.appendChild(img);
+    marco.appendChild(btnCerrar);
+    overlay.appendChild(marco);
     document.body.appendChild(overlay);
+  }
+}
 
     function mostrarCreadores() {
       let overlay = document.getElementById('creadores-overlay');
@@ -316,44 +350,67 @@ function mostrarControles() {
         overlay.style.justifyContent = 'center';
         overlay.style.zIndex = '9999';
 
-        
+        // Marco contenedor para la imagen
+        const marcoImg = document.createElement('div');
+        marcoImg.style.position = 'absolute';
+        marcoImg.style.top = '50%';
+        marcoImg.style.left = '50%';
+        marcoImg.style.transform = 'translate(-50%, -50%)';
+        marcoImg.style.padding = '2vw 1vw';
+        marcoImg.style.background = 'rgba(255,255,255,0.95)';
+        marcoImg.style.border = 'min(8px, 2vw) solid #2E5984';
+        marcoImg.style.boxShadow = '0 0 30px #000, 0 0 0 4px #4A90E2 inset';
+        marcoImg.style.borderRadius = '2vw';
+        marcoImg.style.display = 'flex';
+        marcoImg.style.justifyContent = 'center';
+        marcoImg.style.alignItems = 'center';
+        marcoImg.style.imageRendering = 'pixelated';
+        marcoImg.style.zIndex = '1';
+        marcoImg.style.maxWidth = '96vw';
+        marcoImg.style.maxHeight = '85vh';
+        marcoImg.style.boxSizing = 'border-box';
+
         const img = document.createElement('img');
         img.src = 'assets/entities/creadores.png';
         img.alt = 'Creadores';
-        img.style.position = 'absolute';
-        img.style.top = '50%';
-        img.style.left = '50%';
-        img.style.transform = 'translate(-50%, -50%)';
-        img.style.maxWidth = '70vw';
-        img.style.maxHeight = '100vh'; // Más alta
-        img.style.width = '80vw';
+        img.style.maxWidth = '92vw';
+        img.style.maxHeight = '80vh';
+        img.style.width = '100%';
         img.style.height = 'auto';
-        img.style.zIndex = '1';
         img.style.boxShadow = '0 0 20px #000';
+        img.style.borderRadius = '1vw';
+        img.style.imageRendering = 'pixelated';
+        img.style.display = 'block';
 
         img.addEventListener('click', function() {
           overlay.remove();
         });
 
+        marcoImg.appendChild(img);
+
         const modal = document.createElement('div');
-        modal.style.background = 'rgba(255,255,255,0.35)';
-        modal.style.padding = '10px 10px';
-        modal.style.borderRadius = '8px';
+        modal.style.background = 'rgba(255,255,255,0.92)';
+        modal.style.padding = '1vw 1vw';
+        modal.style.borderRadius = '1vw';
         modal.style.boxShadow = '0 0 10px #000';
         modal.style.textAlign = 'center';
         modal.style.fontFamily = "'Press Start 2P', 'VT323', 'Courier New', monospace";
-        modal.style.fontSize = '0.85em';
+        modal.style.fontSize = 'min(0.8em, 2vw)';
         modal.style.letterSpacing = '1px';
         modal.style.border = '2px solid #222';
         modal.style.imageRendering = 'pixelated';
-        modal.style.maxWidth = '20vw';
-        modal.style.position = 'relative';
+        modal.style.maxWidth = '60vw';
+        modal.style.position = 'absolute';
+        modal.style.left = '50%';
+        modal.style.bottom = 'max(1vw, 10px)';
+        modal.style.transform = 'translateX(-50%)';
         modal.style.zIndex = '2';
+        modal.style.boxSizing = 'border-box';
 
         modal.innerHTML = `
           <h2 style="
-            margin-bottom:10px;
-            font-size:1.2em;
+            margin-bottom:1vw;
+            font-size:min(1em, 3vw);
             color:#2E5984;
             text-shadow:1px 1px 0 #fff, 2px 2px 0 #357ABD;
             font-family:'Press Start 2P','VT323','Courier New',monospace;
@@ -361,8 +418,8 @@ function mostrarControles() {
             image-rendering:pixelated;
           ">Creadores</h2>
           <div style="
-            margin-bottom:12px;
-            font-size:0.9em;
+            margin-bottom:1vw;
+            font-size:min(0.8em, 2vw);
             color:#444;
             font-family:'Press Start 2P','VT323','Courier New',monospace;
             text-shadow:1px 1px 0 #fff, 1px 1px 0 #4A90E2;
@@ -374,7 +431,7 @@ function mostrarControles() {
             list-style:none;
             padding:0;
             margin:0;
-            font-size:1em;
+            font-size:min(0.9em, 2vw);
             color:#222;
             text-shadow:1px 1px 0 #fff, 1px 1px 0 #4A90E2;
             font-family:'Press Start 2P','VT323','Courier New',monospace;
@@ -392,8 +449,22 @@ function mostrarControles() {
           overlay.remove();
         });
 
-        overlay.appendChild(img);
+        overlay.appendChild(marcoImg);
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
+
+        // Extra: cerrar con ESC
+        window.addEventListener('keydown', function escClose(e) {
+          if (e.key === 'Escape') {
+            overlay.remove();
+            window.removeEventListener('keydown', escClose);
+          }
+        });
+        // Cerrar al hacer click fuera del marco
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) {
+            overlay.remove();
+          }
+        });
       }
     }
