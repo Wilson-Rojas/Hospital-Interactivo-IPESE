@@ -252,8 +252,6 @@ function drawPixelMachine(ctx, x, y, machineType) {
 function mostrarMenu() {
   document.getElementById('main-menu').style.display = 'none';
   document.getElementById('menu').style.display = 'block';
-  document.getElementById('titulo').style.display = 'block';
-  document.getElementById('subtitulo').style.display = 'block';
 }
 
 function volverAlMenuPrincipal() {

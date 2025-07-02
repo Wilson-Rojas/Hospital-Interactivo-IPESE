@@ -53,12 +53,20 @@
     <button class="Creadores" id="Creadores" onclick="mostrarCreadores()">Creadores</button>
   </div>
   <div id="menu" style="display:none;">
-    <div id="level-select">
+    <div id="level-select" style="display: flex; flex-direction: column; align-items: center;">
       <h1 class="title">IPESE</h1>
-    <h2 class="subtitle">Selecciona la Sala donde Ayudaras</h2>
-    <button class="easy" onclick="IniciarNivel(3)" id="easy">Salas de Clinicas</button>
-       <button class="normal" onclick="IniciarNivel(2)" id="normal">Emergencias</button>
-      <button class="hard" onclick="IniciarNivel(1)" id="hard">Urgencias Medicas</button>
+      <h2 class="subtitle">Selecciona la Sala donde Ayudaras</h2>
+      <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+        <button class="easy" onclick="IniciarNivel(3)" id="easy" style="background-image: url('assets/buttons/clinicas.png'); background-size: cover; background-position: center; color: #fff; border: none; width: 180px; height: 60px;">
+          Salas de Clinicas
+        </button>
+        <button class="normal" onclick="IniciarNivel(2)" id="normal" style="background-image: url('assets/buttons/emergencias.png'); background-size: cover; background-position: center; color: #fff; border: none; width: 180px; height: 60px;">
+          Emergencias
+        </button>
+        <button class="hard" onclick="IniciarNivel(1)" id="hard" style="background-image: url('assets/buttons/urgencia.png'); background-size: cover; background-position: center; color: #fff; border: none; width: 180px; height: 60px;">
+          Urgencias Medicas
+        </button>
+      </div>
       <button class="back1" onclick="volverAlMenuPrincipal()" id="back1">Volver</button>
     </div>
   </div>
