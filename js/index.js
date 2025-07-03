@@ -466,3 +466,53 @@ function mostrarControles() {
         });
       }
     }
+
+  const audio = document.getElementById("miAudio");
+  const btn = document.getElementById("musicBtn");
+
+  // Colores para cada estado
+  const COLOR_PLAYING = "#4CAF50"; // verde
+  const COLOR_PAUSED = "#F44336";  // rojo
+  const COLOR_ERROR = "#FFC107";   // amarillo
+
+  function updateBtn(state) {
+    switch (state) {
+      case "playing":
+        btn.textContent = "🎵";
+        btn.style.background = COLOR_PLAYING;
+        break;
+      case "paused":
+        btn.textContent = "▶️";
+        btn.style.background = COLOR_PAUSED;
+        break;
+      case "error":
+        btn.textContent = "⚠️";
+        btn.style.background = COLOR_ERROR;
+        break;
+    }
+  }
+
+  // Reproducir automáticamente si se permite
+  window.addEventListener('load', () => {
+    audio.play().then(() => {
+      updateBtn("playing");
+    }).catch(() => {
+      updateBtn("paused");
+      console.warn("Autoplay bloqueado por el navegador.");
+    });
+  });
+
+  function toggleMusic() {
+    if (audio.paused) {
+      audio.play().then(() => {
+        updateBtn("playing");
+      }).catch(() => {
+        updateBtn("error");
+      });
+    } else {
+      audio.pause();
+      updateBtn("paused");
+    }
+  }
+
+  btn.addEventListener('click', toggleMusic);
