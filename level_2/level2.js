@@ -434,34 +434,38 @@ function drawPixelMachine(ctx, x, y, machineType) {
 
 //Mensaje de atender al paciente 
 function mensaje_de_atencion() {
-  const tileSize = 33;
-  const canvas = document.getElementById("game-canvas");
   const dialogo = document.getElementById("dialogo-contextual");
-
+  let mensajeMostrado = false;
   for (const entity of entities) {
     if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
       const dx = Math.abs(doctor.x - entity.x);
       const dy = Math.abs(doctor.y - entity.y);
-      if (dx + dy === 1) {
-        // Mostrar mensaje
-        const x = entity.x * tileSize + 50;
-        const y = entity.y * tileSize + 30;
-
-        dialogo.style.left = `${x}px`;
-        dialogo.style.top = `${y}px`;
+      // Mostrar mensaje si el doctor está al lado de la cama
+      if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+        const canvas = document.getElementById("game-canvas");
+        const tileSize = 33;
+        const offsetX = canvas.offsetLeft + doctor.x * tileSize + 30;
+        const offsetY = canvas.offsetTop + doctor.y * tileSize + 10;
+        dialogo.style.position = "absolute";
+        dialogo.style.left = (offsetX + tileSize + 10) + "px";
+        dialogo.style.top = (offsetY - tileSize / 2) + "px";
+        dialogo.style.transform = "none";
         dialogo.innerText = "Presiona [E] para atender";
         dialogo.style.display = "block";
         dialogo.style.fontFamily = "Consolas, 'Courier New', monospace";
-        return;
+        mensajeMostrado = true;
+        break;
       }
     }
   }
-
-  dialogo.style.display = "none";
+  if (!mensajeMostrado) {
+    dialogo.style.display = "none";
+  }
 }
 
 function intentarAtenderPaciente() {
   for (const entity of entities) {
+    entradaHabilitada = false; // Desactivar entrada mientras se atiende
     if (entity.type === "bed" && entity.patient && entity.patientStatus === "sick") {
       const dx = Math.abs(doctor.x - entity.x);
       const dy = Math.abs(doctor.y - entity.y);
