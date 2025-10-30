@@ -748,7 +748,6 @@ function mostrarPregunta(numero) {
     mostrarPregunta(nuevoNumero);
     return;
   }
-
   // Mezclar las opciones de respuesta
   function mezclar(array) {
     for (let i = array.length - 1; i > 0; i--) {

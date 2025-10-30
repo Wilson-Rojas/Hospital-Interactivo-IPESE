@@ -18,6 +18,7 @@ window.addEventListener("load", () => {
     }, 800); // Espera a que termine la animación de subida
   }, 800);
   IniciarNivel(3);//Iniciar el juego
+  habilitar_Movimiento()
 });
 
 //movilidad del doctor 
@@ -155,6 +156,7 @@ function play_again(){
 function IniciarNivel(level) {
   // Simulación de sonido retro y efecto de animación
   console.log("Iniciando el Nivel", level);
+  habilitar_Movimiento();
   // Iniciar el juego
   const canvas = document.getElementById("game-canvas");
   canvas.style.display = "block";
@@ -537,6 +539,7 @@ function Responder() {
     const respuestaUsuario = document.querySelector('input[name="respuesta"]:checked')?.value;
     if (respuestaUsuario == undefined) {
       respuestaContainer.innerHTML = '<span style="color:orange;font-weight:bold;">Por favor selecciona una respuesta</span>';
+      habilitar_Movimiento();
       return
     }
     if (respuestaUsuario === respuestaCorrecta) {

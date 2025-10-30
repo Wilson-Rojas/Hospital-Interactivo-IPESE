@@ -440,7 +440,7 @@ function mostrarControles() {
             <li style="margin-bottom:2px;"><span style="margin-right:4px;">&#9794;</span> Fernando Ayala</li>
             <li style="margin-bottom:2px;"><span style="margin-right:4px;">&#9794;</span> Ricardo Montiel</li>
             <li style="margin-bottom:2px;"><span style="margin-right:4px;">&#9794;</span> Wilson Rojas</li>
-            <li><span style="margin-right:2px;">&#9794;</span> Ulises Villalva</li>
+            <li><span style="margin-right:2px;">&#9794;</span> Ulises Villalba</li>
           </ul>
         `;
         modal.addEventListener('click', function() {
